@@ -4,94 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protect PDF | EasyUseHub</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <style>
         :root { --primary: #22c55e; --dark: #1e293b; --bg: #f8fafc; }
-        body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; flex-direction: column; }
-        .card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 90%; max-width: 400px; text-align: center; }
-        .upload-zone { border: 2px dashed #cbd5e1; padding: 2rem; border-radius: 15px; cursor: pointer; margin-bottom: 1rem; background: #fff; }
-        input[type="password"] { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; }
-        .btn-green { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        #status { margin-top: 15px; font-size: 0.85rem; padding: 10px; border-radius: 5px; display: none; }
-        .nav-btns { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
-        .nav-link { text-decoration: none; color: white; background: #64748b; padding: 10px 15px; border-radius: 8px; font-size: 0.9rem; }
+        body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; flex-direction: column; padding: 10px; }
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 380px; text-align: center; box-sizing: border-box; }
+        .upload-area { border: 2px dashed #cbd5e1; padding: 30px 10px; border-radius: 15px; cursor: pointer; margin-bottom: 15px; background: #fff; }
+        input[type="password"] { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        /* Error Box Styles */
+        #status-box { margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 13px; display: none; text-align: left; overflow-wrap: break-word; }
+        .nav-btns { display: flex; gap: 8px; margin-top: 20px; justify-content: center; }
+        .nav-link { text-decoration: none; color: white; background: #64748b; padding: 10px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>🔐 Protect PDF</h1>
-    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-        <span id="fileName">📁 Tap to select PDF</span>
+    <h2 style="margin-top:0;">🔐 Protect PDF</h2>
+    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <span id="nameLabel">📁 Select PDF File</span>
     </div>
     <input type="file" id="fileInput" accept="application/pdf" style="display:none">
-    <input type="password" id="passInput" placeholder="Password">
-    <button class="btn-green" id="mainBtn" onclick="startProtection()">Protect & Download</button>
-    <div id="status"></div>
-    <div class="nav-btns">
-        <a href="https://easyusehub.blogspot.com/?m=1" class="nav-link">🏠 Home</a>
-        <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="nav-link" style="background:#1e293b">📂 All Tools</a>
+    <input type="password" id="passInput" placeholder="Set PDF Password">
+    
+    <button class="btn" id="lockBtn" onclick="runProtection()">Protect & Download</button>
+    
+    <div id="status-box"></div>
+
+    <div class="nav-buttons">
+        <div class="nav-btns">
+            <a href="https://easyusehub.blogspot.com/?m=1" class="nav-link">🏠 Home</a>
+            <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="nav-link" style="background:var(--dark)">📂 All Tools</a>
+        </div>
     </div>
 </div>
 
 <script>
     const fileInput = document.getElementById('fileInput');
-    const status = document.getElementById('status');
-    const mainBtn = document.getElementById('mainBtn');
+    const statusBox = document.getElementById('status-box');
+    const lockBtn = document.getElementById('lockBtn');
 
-    fileInput.onchange = () => { if(fileInput.files[0]) document.getElementById('fileName').innerText = "📄 " + fileInput.files[0].name; };
+    fileInput.onchange = () => { if(fileInput.files[0]) document.getElementById('nameLabel').innerText = fileInput.files[0].name; };
 
-    async function startProtection() {
+    function log(msg, isError = false) {
+        statusBox.style.display = "block";
+        statusBox.style.background = isError ? "#fee2e2" : "#e0f2fe";
+        statusBox.style.color = isError ? "#991b1b" : "#075985";
+        statusBox.innerText = msg;
+    }
+
+    async function runProtection() {
         const file = fileInput.files[0];
-        const password = document.getElementById('passInput').value;
+        const pass = document.getElementById('passInput').value;
 
-        if (!file || !password) return alert("Select file and password!");
+        if (!file || !pass) return alert("Select file and enter password!");
 
-        // Reset UI
-        status.style.display = "block";
-        status.style.background = "#e0f2fe";
-        status.style.color = "#0369a1";
-        status.innerText = "⏳ Initializing...";
-        mainBtn.disabled = true;
+        log("⏳ Loading library and file...");
+        lockBtn.disabled = true;
 
         try {
-            // Check if Library loaded
-            if (typeof PDFLib === 'undefined') {
-                throw new Error("Library failed to load. Check internet connection.");
-            }
+            // Check library
+            if (typeof PDFLib === 'undefined') throw new Error("PDF Library missing. Please refresh.");
 
+            // Convert file to bytes
             const arrayBuffer = await file.arrayBuffer();
             
-            // Try loading with ignore encryption
+            // Load PDF
             const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+            log("🔒 Encrypting PDF data...");
 
-            status.innerText = "🔒 Applying Password...";
-
+            // Set protection
             await pdfDoc.encrypt({
-                userPassword: password,
-                ownerPassword: 'random_owner_pw_' + Math.random(),
+                userPassword: pass,
+                ownerPassword: 'owner' + Math.random(),
                 permissions: { printing: 'highResolution', modifying: false, copying: false }
             });
 
+            // Save and download
             const pdfBytes = await pdfDoc.save();
             const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = "protected_" + file.name;
-            link.click();
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "protected_" + file.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
 
-            status.innerText = "✅ Success! Download started.";
-            status.style.background = "#dcfce7";
-            status.style.color = "#15803d";
-        } catch (err) {
-            console.error(err);
-            status.style.background = "#fee2e2";
-            status.style.color = "#b91c1c";
-            status.innerText = "❌ Error: " + err.message;
+            log("✅ Success! Check your downloads folder.");
+        } catch (e) {
+            console.error(e);
+            log("❌ ERROR: " + e.message, true);
         } finally {
-            mainBtn.disabled = false;
+            lockBtn.disabled = false;
         }
     }
 </script>
+
 </body>
 </html>
