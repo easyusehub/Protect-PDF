@@ -1,31 +1,31 @@
-import fetch from 'node-fetch';
-import FormData from 'form-data';
+ const formidable = require('formidable');
+const fs = require('fs');
+const { PDFDocument } = require('pdf-lib');
 
-const API_KEY = 'YOUR_ILOVEPDF_API_KEY'; // ILovePDF API Key
+export const config = { api: { bodyParser: false } };
 
-export default async function handler(req, res) {
-    if(req.method !== 'POST') return res.status(405).send('Method Not Allowed');
+export default async function handler(req, res){
+  if(req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
-    const { pdf, password } = req.body;
-    if(!pdf || !password) return res.status(400).send('Missing file or password');
+  const form = new formidable.IncomingForm();
+  form.parse(req, async (err, fields, files)=>{
+    if(err) return res.status(500).send('Error parsing file');
 
-    const formData = new FormData();
-    formData.append('file', Buffer.from(pdf, 'base64'), 'file.pdf');
-    formData.append('password', password);
+    const password = fields.password;
+    const pdfFile = files.pdf;
+    if(!pdfFile) return res.status(400).send('No PDF file uploaded');
 
-    try {
-        const response = await fetch('https://api.ilovepdf.com/v1/protect', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${API_KEY}` },
-            body: formData
-        });
+    try{
+        const existingPdfBytes = fs.readFileSync(pdfFile.filepath);
+        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+        pdfDoc.encrypt({ userPassword: password, ownerPassword: password, permissions: { printing: 'highResolution' } });
+        const pdfBytes = await pdfDoc.save();
 
-        const buffer = await response.arrayBuffer();
         res.setHeader('Content-Disposition','attachment; filename=protected.pdf');
         res.setHeader('Content-Type','application/pdf');
-        res.send(Buffer.from(buffer));
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error protecting PDF');
+        res.send(Buffer.from(pdfBytes));
+    } catch(e){
+        res.status(500).send('Error processing PDF');
     }
+  });
 }
