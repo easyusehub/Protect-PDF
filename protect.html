@@ -8,10 +8,11 @@
 </head>
 <body>
 
+<!-- Main container -->
 <div class="protect-container">
     <h1>🔐 Protect Your PDF</h1>
     <p class="subtitle">
-        Upload your PDF and add a password to secure it instantly.
+        Upload your PDF and set a password to secure your files instantly.
     </p>
 
     <!-- File Upload -->
@@ -25,6 +26,12 @@
 
     <!-- Status -->
     <p id="status">No file selected</p>
+</div>
+
+<!-- Bottom Navigation Buttons -->
+<div class="bottom-nav">
+    <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="nav-btn">📂 All PDF Tools</a>
+    <a href="https://easyusehub.blogspot.com/?m=1" class="nav-btn">🏠 Home</a>
 </div>
 
 <script>
@@ -41,7 +48,7 @@ function protectPDF(){
 
     document.getElementById('status').innerText = "Protecting PDF...";
 
-    // Demo: remove setTimeout if using API
+    // Demo → remove this when using API
     setTimeout(()=>{
         document.getElementById('status').innerText = "PDF protected successfully (Demo)";
     },1500);
