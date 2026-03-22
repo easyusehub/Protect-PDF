@@ -1,15 +1,11 @@
 {
-  "name": "protect-pdf",
+  "name": "ilovepdf-protector",
   "version": "1.0.0",
-  "description": "Hybrid Protect PDF Tool",
   "main": "api/protect.js",
-  "scripts": {
-    "start": "node api/protect.js"
-  },
   "dependencies": {
     "express": "^4.18.2",
-    "express-fileupload": "^1.4.0",
-    "node-fetch": "^2.6.9",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^2.6.7",
     "form-data": "^4.0.0"
   }
 }
