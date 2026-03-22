@@ -3,192 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Protect PDF | EasyUseHub</title>
+<title>Hybrid Protect PDF | EasyUseHub</title>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 <style>
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: 'Segoe UI', sans-serif;
-    background: #fff;
-    color: #1e293b;
-}
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-.container {
-    width: 400px;
-    max-width: 90%;
-    padding: 40px 20px;
-    text-align: center;
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-}
-h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
-.subtitle {
-    font-size: 1rem;
-    color: #475569;
-    margin-bottom: 25px;
-}
-.upload {
-    width: 100%;
-    padding: 35px;
-    border: 3px dashed #22c55e;
-    border-radius: 15px;
-    background: #f1f5f9;
-    cursor: pointer;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #16a34a;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
-}
-.upload:hover {
-    background: #e6f4ea;
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-}
-.upload-icon { font-size: 2.5rem; }
-input[type="password"] {
-    width: 100%;
-    padding: 15px;
-    font-size: 1.1rem;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    background: #f1f5f9;
-    margin-bottom: 15px;
-    transition: 0.3s;
-}
-input[type="password"]:focus {
-    border-color: #22c55e;
-    box-shadow: 0 0 10px rgba(34,197,94,0.3);
-    outline: none;
-}
-button {
-    width: 100%;
-    padding: 15px;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 10px;
-    background: #22c55e;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
-}
-button:hover { background: #16a34a; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-#download-btn {
-    display: none;
-    width: 100%;
-    padding: 15px;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 10px;
-    background: #2563eb;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
-}
-#download-btn:hover { background: #1e40af; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-#status { font-size: 1rem; color: #475569; margin-top: 15px; }
-.bottom-buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 15px;
-    width: auto;
-    margin-top: 20px;
-}
-.bottom-buttons a {
-    padding: 12px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 10px;
-    text-decoration: none;
-    color: #fff;
-    transition: all 0.3s ease;
-}
-.all-tools { background: #1e293b; }
-.all-tools:hover { background: #3b82f6; transform: translateY(-2px); }
-.home-btn { background: #22c55e; }
-.home-btn:hover { background: #16a34a; transform: translateY(-2px); }
+html, body { margin:0; padding:0; font-family:'Segoe UI',sans-serif; background:#fff; color:#1e293b; display:flex; justify-content:center; align-items:center; height:100%; }
+.container { max-width:450px; width:90%; padding:30px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.1); text-align:center; }
+h2 { margin-bottom:15px; }
+.upload { padding:30px; border:3px dashed #22c55e; border-radius:15px; cursor:pointer; margin-bottom:15px; font-weight:600; color:#16a34a; transition:0.3s; }
+.upload:hover { background:#e6f4ea; transform:scale(1.02); }
+input[type="password"] { width:100%; padding:14px; margin-bottom:12px; border-radius:8px; border:1px solid #ccc; font-size:1rem; }
+button { width:100%; padding:14px; border:none; border-radius:8px; font-weight:600; cursor:pointer; margin-bottom:12px; background:#22c55e; color:#fff; transition:0.3s; }
+button:hover { background:#16a34a; }
+#download-btn { display:none; background:#2563eb; }
+#download-btn:hover { background:#1e40af; }
+#status { font-size:0.95rem; color:#475569; margin-top:10px; }
+.bottom-buttons { display:flex; justify-content:center; gap:12px; margin-top:20px; }
+.bottom-buttons a { text-decoration:none; padding:10px 18px; border-radius:8px; color:#fff; font-weight:600; background:#1e293b; transition:0.3s; }
+.bottom-buttons a:hover { background:#3b82f6; }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🔐 Protect PDF</h1>
-    <p class="subtitle">Upload your PDF and add a password to secure it instantly.</p>
+<h2>🔐 Protect PDF</h2>
+<div class="upload" onclick="document.getElementById('file').click()">📁 Click to upload PDF</div>
+<input type="file" id="file" accept="application/pdf" hidden>
+<input type="password" id="password" placeholder="Enter password">
+<button onclick="protectPDF()">Protect PDF</button>
+<button id="download-btn">📥 Download Protected PDF</button>
+<p id="status">No file selected</p>
 
-    <div class="upload" onclick="document.getElementById('file').click()">
-        <div class="upload-icon">📁</div>
-        Click to upload PDF file
-    </div>
-    <input type="file" id="file" accept="application/pdf" hidden>
-
-    <input type="password" id="password" placeholder="Enter password">
-    <button onclick="protectPDF()">Protect PDF</button>
-
-    <button id="download-btn">Download Protected PDF</button>
-    <p id="status">No file selected</p>
-
-    <div class="bottom-buttons">
-        <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="all-tools">📂 All PDF Tools</a>
-        <a href="https://easyusehub.blogspot.com/?m=1" class="home-btn">🏠 Home</a>
-    </div>
+<div class="bottom-buttons">
+<a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1">📂 All PDF Tools</a>
+<a href="https://easyusehub.blogspot.com/?m=1">🏠 Home</a>
+</div>
 </div>
 
 <script>
 let file = null;
 let downloadUrl = '';
+const API_THRESHOLD = 5 * 1024 * 1024; // 5MB threshold for API call
 
 document.getElementById('file').addEventListener('change', e=>{
     file = e.target.files[0];
-    document.getElementById('status').innerText = file ? file.name : 'No file selected';
+    document.getElementById('status').textContent = file ? file.name : 'No file selected';
 });
 
-function protectPDF(){
+async function protectPDF(){
     if(!file){ alert('Upload PDF first'); return; }
-    let password = document.getElementById('password').value;
+    const password = document.getElementById('password').value;
     if(!password){ alert('Enter password'); return; }
-
-    document.getElementById('status').innerText = "Protecting PDF...";
-
-    const formData = new FormData();
-    formData.append('pdf', file);
-    formData.append('password', password);
-
-    fetch('/api/protect', {method:'POST', body:formData})
-    .then(res => { if(!res.ok) throw new Error('Error'); return res.blob(); })
-    .then(blob => {
-        downloadUrl = window.URL.createObjectURL(blob);
-        const downloadBtn = document.getElementById('download-btn');
-        downloadBtn.style.display = 'block';
-        downloadBtn.onclick = () => {
-            const a = document.createElement('a');
-            a.href = downloadUrl;
-            a.download = 'protected.pdf';
-            a.click();
-        };
-        document.getElementById('status').innerText = "PDF ready! Click Download below.";
-    })
-    .catch(()=>{ document.getElementById('status').innerText = "Error protecting PDF!"; });
+    
+    document.getElementById('status').textContent = "Processing...";
+    
+    // Small file → client-side
+    if(file.size <= API_THRESHOLD){
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+            pdfDoc.encrypt({
+                userPassword: password,
+                ownerPassword: password,
+                permissions: { printing:'highResolution', modifying:false, copying:false }
+            });
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], {type:'application/pdf'});
+            downloadUrl = URL.createObjectURL(blob);
+            const dlBtn = document.getElementById('download-btn');
+            dlBtn.style.display='block';
+            dlBtn.onclick = ()=> {
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = 'protected.pdf';
+                a.click();
+            };
+            document.getElementById('status').textContent = "✔ PDF ready! Click Download.";
+        } catch(e){
+            console.error(e);
+            document.getElementById('status').textContent = "❌ Error protecting PDF!";
+        }
+    } else {
+        // Large file → API call
+        const formData = new FormData();
+        formData.append('pdf', file);
+        formData.append('password', password);
+        
+        fetch('/api/protect', { method:'POST', body: formData })
+        .then(res=>{
+            if(!res.ok) throw new Error('API error');
+            return res.blob();
+        })
+        .then(blob=>{
+            downloadUrl = URL.createObjectURL(blob);
+            const dlBtn = document.getElementById('download-btn');
+            dlBtn.style.display='block';
+            dlBtn.onclick = ()=> {
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = 'protected.pdf';
+                a.click();
+            };
+            document.getElementById('status').textContent = "✔ Protected via API! Click Download.";
+        })
+        .catch(()=>{
+            document.getElementById('status').textContent = "❌ Error via API!";
+        });
+    }
 }
 </script>
 
