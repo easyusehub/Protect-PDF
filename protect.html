@@ -4,51 +4,153 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protect PDF | EasyUseHub</title>
-<link rel="stylesheet" href="/assets/style.css">
+<style>
+/* Full-screen body */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #fff; /* white background */
+    color: #1e293b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Tool container centered */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 600px;
+    width: 90%;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+/* Headings */
+h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+.subtitle {
+    font-size: 1.2rem;
+    color: #475569;
+    line-height: 1.6;
+}
+
+/* Upload box */
+.upload {
+    width: 100%;
+    padding: 20px;
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #f1f5f9;
+    font-size: 1.1rem;
+}
+.upload:hover {
+    background: #e2e8f0;
+}
+
+/* Inputs */
+input[type="password"] {
+    width: 100%;
+    padding: 18px;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 18px;
+    font-size: 1.3rem;
+    border: none;
+    border-radius: 10px;
+    background: #22c55e;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+/* Status text */
+#status {
+    font-size: 1.2rem;
+    color: #475569;
+}
+
+/* Bottom navbar */
+.navbar {
+    position: fixed;
+    bottom: 20px;
+    display: flex;
+    gap: 20px;
+}
+.navbar a {
+    padding: 12px 20px;
+    background: #1e293b;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+.navbar a:hover {
+    background: #3b82f6;
+}
+</style>
 </head>
 <body>
 
-<!-- Main container -->
-<div class="protect-container">
-    <h1>🔐 Protect Your PDF</h1>
-    <p class="subtitle">
-        Upload your PDF and set a password to secure your files instantly.
-    </p>
+<!-- Tool Container -->
+<div class="container">
+    <h1>🔐 Protect PDF</h1>
+    <p class="subtitle">Upload your PDF and add a password to secure it instantly.</p>
 
-    <!-- File Upload -->
-    <input type="file" id="file" accept="application/pdf">
+    <div class="upload" onclick="document.getElementById('file').click()">Click to upload PDF</div>
+    <input type="file" id="file" accept="application/pdf" hidden>
 
-    <!-- Password Input -->
     <input type="password" id="password" placeholder="Enter password">
-
-    <!-- Protect Button -->
     <button onclick="protectPDF()">Protect PDF</button>
 
-    <!-- Status -->
     <p id="status">No file selected</p>
 </div>
 
-<!-- Bottom Navigation Buttons -->
-<div class="bottom-nav">
-    <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="nav-btn">📂 All PDF Tools</a>
-    <a href="https://easyusehub.blogspot.com/?m=1" class="nav-btn">🏠 Home</a>
+<!-- Bottom Navbar -->
+<div class="navbar">
+    <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1">📂 All PDF Tools</a>
+    <a href="https://easyusehub.blogspot.com/?m=1">🏠 Home</a>
 </div>
 
 <script>
 let file = null;
-document.getElementById('file').addEventListener('change', function(e){
+document.getElementById('file').addEventListener('change', e=>{
     file = e.target.files[0];
     document.getElementById('status').innerText = file ? file.name : 'No file selected';
 });
 
 function protectPDF(){
     if(!file){ alert('Upload PDF first'); return; }
-    let pass = document.getElementById('password').value;
-    if(!pass){ alert('Enter password'); return; }
+    let password = document.getElementById('password').value;
+    if(!password){ alert('Enter password'); return; }
 
     document.getElementById('status').innerText = "Protecting PDF...";
 
-    // Demo → remove this when using API
+    // Demo code → replace with API integration
     setTimeout(()=>{
         document.getElementById('status').innerText = "PDF protected successfully (Demo)";
     },1500);
