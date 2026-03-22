@@ -1,31 +1,31 @@
- const formidable = require('formidable');
-const fs = require('fs');
-const { PDFDocument } = require('pdf-lib');
+ const fileUpload = require('express-fileupload');
+const fetch = require('node-fetch');
+const FormData = require('form-data');
 
-export const config = { api: { bodyParser: false } };
+module.exports = async (req, res) => {
+  await fileUpload({ createParentPath: true })(req, res, async (err) => {
+    if (err) return res.status(500).send('Upload error');
 
-export default async function handler(req, res){
-  if(req.method !== 'POST') return res.status(405).send('Method Not Allowed');
+    const file = req.files.pdf;
+    const password = req.body.password || '12345';
 
-  const form = new formidable.IncomingForm();
-  form.parse(req, async (err, fields, files)=>{
-    if(err) return res.status(500).send('Error parsing file');
+    const formData = new FormData();
+    formData.append('file', file.data, file.name);
+    formData.append('password', password);
 
-    const password = fields.password;
-    const pdfFile = files.pdf;
-    if(!pdfFile) return res.status(400).send('No PDF file uploaded');
-
-    try{
-        const existingPdfBytes = fs.readFileSync(pdfFile.filepath);
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-        pdfDoc.encrypt({ userPassword: password, ownerPassword: password, permissions: { printing: 'highResolution' } });
-        const pdfBytes = await pdfDoc.save();
-
-        res.setHeader('Content-Disposition','attachment; filename=protected.pdf');
-        res.setHeader('Content-Type','application/pdf');
-        res.send(Buffer.from(pdfBytes));
-    } catch(e){
-        res.status(500).send('Error processing PDF');
+    try {
+      const response = await fetch('https://api.ilovepdf.com/v1/protect', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${process.env.ILOVEPDF_KEY}` },
+        body: formData
+      });
+      if (!response.ok) throw new Error('API error');
+      const buffer = await response.buffer();
+      res.setHeader('Content-Disposition', 'attachment; filename=protected.pdf');
+      res.send(buffer);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error protecting PDF');
     }
   });
-}
+};
