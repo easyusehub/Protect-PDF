@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protect PDF | EasyUseHub</title>
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.js"></script>
     <style>
         :root { --primary: #22c55e; --dark: #1e293b; --bg: #f8fafc; }
-        body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; flex-direction: column; padding: 10px; }
-        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 380px; text-align: center; box-sizing: border-box; }
-        .upload-area { border: 2px dashed #cbd5e1; padding: 30px 10px; border-radius: 15px; cursor: pointer; margin-bottom: 15px; background: #fff; }
-        input[type="password"] { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        /* Error Box Styles */
-        #status-box { margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 13px; display: none; text-align: left; overflow-wrap: break-word; }
-        .nav-btns { display: flex; gap: 8px; margin-top: 20px; justify-content: center; }
-        .nav-link { text-decoration: none; color: white; background: #64748b; padding: 10px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; flex-direction: column; padding: 15px; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; box-sizing: border-box; }
+        .upload-area { border: 2px dashed #cbd5e1; padding: 35px 15px; border-radius: 15px; cursor: pointer; margin-bottom: 15px; background: #fff; }
+        input[type="password"] { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        #status { margin-top: 15px; padding: 12px; border-radius: 8px; font-size: 14px; display: none; line-height: 1.4; }
+        .nav-btns { display: flex; gap: 10px; margin-top: 25px; justify-content: center; }
+        .nav-link { text-decoration: none; color: white; background: #64748b; padding: 12px 18px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -26,62 +25,69 @@
         <span id="nameLabel">📁 Select PDF File</span>
     </div>
     <input type="file" id="fileInput" accept="application/pdf" style="display:none">
-    <input type="password" id="passInput" placeholder="Set PDF Password">
+    <input type="password" id="passInput" placeholder="Enter Password">
     
-    <button class="btn" id="lockBtn" onclick="runProtection()">Protect & Download</button>
+    <button class="btn" id="lockBtn" onclick="processPDF()">Protect & Download</button>
     
-    <div id="status-box"></div>
+    <div id="status"></div>
 
-    <div class="nav-buttons">
-        <div class="nav-btns">
-            <a href="https://easyusehub.blogspot.com/?m=1" class="nav-link">🏠 Home</a>
-            <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="nav-link" style="background:var(--dark)">📂 All Tools</a>
-        </div>
+    <div class="nav-btns">
+        <a href="https://easyusehub.blogspot.com/?m=1" class="nav-link">🏠 Home</a>
+        <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="nav-link" style="background:var(--dark)">📂 All Tools</a>
     </div>
 </div>
 
 <script>
     const fileInput = document.getElementById('fileInput');
-    const statusBox = document.getElementById('status-box');
+    const status = document.getElementById('status');
     const lockBtn = document.getElementById('lockBtn');
 
     fileInput.onchange = () => { if(fileInput.files[0]) document.getElementById('nameLabel').innerText = fileInput.files[0].name; };
 
-    function log(msg, isError = false) {
-        statusBox.style.display = "block";
-        statusBox.style.background = isError ? "#fee2e2" : "#e0f2fe";
-        statusBox.style.color = isError ? "#991b1b" : "#075985";
-        statusBox.innerText = msg;
+    function showStatus(msg, type = 'info') {
+        status.style.display = "block";
+        status.style.background = type === 'error' ? "#fee2e2" : "#e0f2fe";
+        status.style.color = type === 'error' ? "#991b1b" : "#075985";
+        status.innerText = msg;
     }
 
-    async function runProtection() {
+    async function processPDF() {
         const file = fileInput.files[0];
         const pass = document.getElementById('passInput').value;
 
-        if (!file || !pass) return alert("Select file and enter password!");
+        if (!file || !pass) return alert("Please select a file and enter a password.");
 
-        log("⏳ Loading library and file...");
+        showStatus("⏳ Processing... Please wait.");
         lockBtn.disabled = true;
 
         try {
-            // Check library
-            if (typeof PDFLib === 'undefined') throw new Error("PDF Library missing. Please refresh.");
+            // Check if PDFLib is loaded
+            if (typeof window.PDFLib === 'undefined') {
+                throw new Error("PDF Library not loaded. Please refresh the page.");
+            }
 
-            // Convert file to bytes
+            const { PDFDocument } = window.PDFLib;
             const arrayBuffer = await file.arrayBuffer();
             
-            // Load PDF
-            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
-            log("🔒 Encrypting PDF data...");
+            // Load the document
+            const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
 
-            // Set protection
+            // ENCRYPT LOGIC
+            // Ensure we are calling it on the right instance
+            if (typeof pdfDoc.encrypt !== 'function') {
+                throw new Error("Your browser is using an outdated version of the library. Clear cache and refresh.");
+            }
+
             await pdfDoc.encrypt({
                 userPassword: pass,
-                ownerPassword: 'owner' + Math.random(),
-                permissions: { printing: 'highResolution', modifying: false, copying: false }
+                ownerPassword: 'owner_' + Math.random().toString(36).substr(2, 9),
+                permissions: {
+                    printing: 'highResolution',
+                    modifying: false,
+                    copying: false
+                }
             });
 
-            // Save and download
             const pdfBytes = await pdfDoc.save();
             const blob = new Blob([pdfBytes], { type: 'application/pdf' });
             const url = URL.createObjectURL(blob);
@@ -93,10 +99,13 @@
             a.click();
             document.body.removeChild(a);
 
-            log("✅ Success! Check your downloads folder.");
+            showStatus("✅ Success! Your file has been downloaded.", "success");
+            status.style.background = "#dcfce7";
+            status.style.color = "#15803d";
+
         } catch (e) {
             console.error(e);
-            log("❌ ERROR: " + e.message, true);
+            showStatus("❌ ERROR: " + e.message, "error");
         } finally {
             lockBtn.disabled = false;
         }
