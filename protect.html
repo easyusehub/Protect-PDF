@@ -1,20 +1,97 @@
-<!                <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure PDF | EasyUseHub</title>
     <style>
-        :root { --primary: #2563eb; --success: #22c55e; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
-        h2 { margin-bottom: 1rem; color: #1e293b; }
-        .upload-area { border: 2px dashed #cbd5e1; padding: 2rem; border-radius: 12px; cursor: pointer; margin-bottom: 1.5rem; transition: 0.3s; }
+        :root { 
+            --primary: #2563eb; 
+            --success: #22c55e; 
+            --bg: #f8fafc; 
+            --dark: #1e293b;
+        }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--bg); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            flex-direction: column;
+        }
+        .card { 
+            background: white; 
+            padding: 2.5rem; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            width: 90%; 
+            max-width: 420px; 
+            text-align: center; 
+        }
+        h2 { margin-top: 0; color: var(--dark); font-size: 1.8rem; }
+        .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+        .upload-area { 
+            border: 2px dashed #cbd5e1; 
+            padding: 2.5rem; 
+            border-radius: 15px; 
+            cursor: pointer; 
+            margin-bottom: 1.2rem; 
+            transition: all 0.3s ease;
+            background: #fff;
+        }
         .upload-area:hover { border-color: var(--primary); background: #f1f5f9; }
-        input[type="password"] { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 14px; border: none; border-radius: 8px; background: var(--success); color: white; font-weight: 600; cursor: pointer; font-size: 1rem; }
-        button:hover { opacity: 0.9; }
-        #status { margin-top: 1rem; font-size: 0.9rem; color: #64748b; }
+        
+        input[type="password"] { 
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 1.2rem; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 10px; 
+            box-sizing: border-box; 
+            font-size: 1rem;
+        }
+        
+        .btn-main { 
+            width: 100%; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 10px; 
+            background: var(--success); 
+            color: white; 
+            font-weight: 700; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            transition: 0.3s;
+        }
+        .btn-main:hover { background: #16a34a; transform: translateY(-2px); }
+        .btn-main:disabled { background: #94a3b8; cursor: not-allowed; }
+
+        #status { margin-top: 1rem; font-size: 0.9rem; color: #475569; min-height: 1.2em; }
+
+        /* Navigation Buttons */
+        .nav-buttons { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            margin-top: 25px; 
+            width: 100%;
+        }
+        .nav-link { 
+            text-decoration: none; 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            color: white; 
+            background: var(--dark); 
+            transition: 0.3s;
+        }
+        .nav-link:hover { background: var(--primary); transform: scale(1.05); }
+        .nav-link.home { background: #64748b; }
+
         .hidden { display: none; }
     </style>
 </head>
@@ -22,18 +99,24 @@
 
 <div class="card">
     <h2>🔐 Protect PDF</h2>
-    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Upload a file and set a password</p>
+    <p class="subtitle">Securely encrypt your PDF with a password</p>
 
     <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <span id="fileText">📁 Click to upload PDF</span>
+        <span id="fileText" style="display:block; font-weight:600; color:#475569;">📁 Click to upload PDF</span>
+        <small style="color:#94a3b8;">Max size: 50MB</small>
     </div>
 
     <input type="file" id="fileInput" accept="application/pdf" class="hidden">
-    <input type="password" id="password" placeholder="Enter strong password">
+    <input type="password" id="password" placeholder="Set your password here">
     
-    <button onclick="uploadAndProtect()" id="submitBtn">Protect & Download</button>
+    <button onclick="uploadAndProtect()" id="submitBtn" class="btn-main">Protect & Download</button>
     
     <p id="status"></p>
+
+    <div class="nav-buttons">
+        <a href="https://easyusehub.blogspot.com/?m=1" class="nav-link home">🏠 Home</a>
+        <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="nav-link">📂 All PDF Tools</a>
+    </div>
 </div>
 
 <script>
@@ -41,9 +124,11 @@
     const fileText = document.getElementById('fileText');
     const status = document.getElementById('status');
 
-    // Show selected filename
     fileInput.onchange = () => {
-        if(fileInput.files[0]) fileText.innerText = "📄 " + fileInput.files[0].name;
+        if(fileInput.files[0]) {
+            fileText.innerHTML = "📄 <span style='color:#2563eb'>" + fileInput.files[0].name + "</span>";
+            status.innerText = "File selected. Now enter a password.";
+        }
     };
 
     async function uploadAndProtect() {
@@ -51,32 +136,30 @@
         const password = document.getElementById('password').value;
 
         if (!file || !password) {
-            alert("Please select a file and enter a password.");
+            alert("Please select a PDF file and set a password!");
             return;
         }
 
-        status.innerText = "⏳ Processing on server...";
+        status.innerHTML = "⏳ <span style='color:#2563eb'>Encrypting... please wait.</span>";
         const btn = document.getElementById('submitBtn');
         btn.disabled = true;
 
-        // Prepare data for API
         const formData = new FormData();
         formData.append('pdf', file);
         formData.append('password', password);
 
         try {
+            // Adjust the URL if your Vercel API path is different
             const response = await fetch('/api/protect', {
                 method: 'POST',
                 body: formData
             });
 
-            if (!response.ok) throw new Error('Server error occurred');
+            if (!response.ok) throw new Error('Failed to protect PDF');
 
-            // Receive the protected PDF as a Blob
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             
-            // Create a hidden link to trigger download
             const a = document.createElement('a');
             a.href = url;
             a.download = `protected_${file.name}`;
@@ -84,10 +167,10 @@
             a.click();
             a.remove();
 
-            status.innerHTML = "<span style='color:green'>✅ Success! Downloaded.</span>";
+            status.innerHTML = "<span style='color:var(--success)'>✅ Success! Your file is ready.</span>";
         } catch (err) {
             console.error(err);
-            status.innerHTML = "<span style='color:red'>❌ Error connecting to server.</span>";
+            status.innerHTML = "<span style='color:#ef4444'>❌ Error: Process failed. Try again.</span>";
         } finally {
             btn.disabled = false;
         }
@@ -96,3 +179,4 @@
 
 </body>
 </html>
+        
