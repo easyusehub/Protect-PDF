@@ -11,13 +11,13 @@ body{
   font-family:'Segoe UI',sans-serif;
   background:#fff;
   color:#1e293b;
+  min-height:100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
-  min-height:100vh;
-  position:relative;
 }
 
+/* Container for main content */
 .container{
   display:flex;
   flex-direction:column;
@@ -27,6 +27,7 @@ body{
   width:90%;
   padding:40px 20px;
   text-align:center;
+  margin-bottom:120px; /* give space for fixed buttons */
 }
 
 h1{
@@ -98,7 +99,7 @@ button:hover{
   color:#475569;
 }
 
-/* Bottom buttons stack */
+/* Bottom buttons fixed */
 .bottom-buttons{
   position:fixed;
   bottom:20px;
@@ -107,10 +108,11 @@ button:hover{
   gap:10px;
   width:90%;
   max-width:400px;
-  align-items:center;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:1000;
 }
 
-/* Bottom buttons style */
 .bottom-buttons a{
   width:100%;
   text-align:center;
@@ -136,7 +138,6 @@ button:hover{
 .home-btn:hover{
   background:#16a34a;
 }
-
 </style>
 </head>
 <body>
@@ -157,7 +158,7 @@ button:hover{
   <p id="status">No file selected</p>
 </div>
 
-<!-- Bottom Buttons Stack -->
+<!-- Fixed bottom buttons -->
 <div class="bottom-buttons">
   <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="all-tools">📂 All PDF Tools</a>
   <a href="https://easyusehub.blogspot.com/?m=1" class="home-btn">🏠 Home</a>
@@ -177,7 +178,6 @@ function protectPDF(){
 
   document.getElementById('status').innerText = "Protecting PDF...";
 
-  // API fetch to /api/protect
   const formData = new FormData();
   formData.append('pdf', file);
   formData.append('password', password);
@@ -202,4 +202,4 @@ function protectPDF(){
 </script>
 
 </body>
-</html>    
+</html>  
