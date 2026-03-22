@@ -1,115 +1,97 @@
-<!DOCTYPE html>
+<!                <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hybrid Protect PDF | EasyUseHub</title>
-<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-<style>
-html, body { margin:0; padding:0; font-family:'Segoe UI',sans-serif; background:#fff; color:#1e293b; display:flex; justify-content:center; align-items:center; height:100%; }
-.container { max-width:450px; width:90%; padding:30px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.1); text-align:center; }
-h2 { margin-bottom:15px; }
-.upload { padding:30px; border:3px dashed #22c55e; border-radius:15px; cursor:pointer; margin-bottom:15px; font-weight:600; color:#16a34a; transition:0.3s; }
-.upload:hover { background:#e6f4ea; transform:scale(1.02); }
-input[type="password"] { width:100%; padding:14px; margin-bottom:12px; border-radius:8px; border:1px solid #ccc; font-size:1rem; }
-button { width:100%; padding:14px; border:none; border-radius:8px; font-weight:600; cursor:pointer; margin-bottom:12px; background:#22c55e; color:#fff; transition:0.3s; }
-button:hover { background:#16a34a; }
-#download-btn { display:none; background:#2563eb; }
-#download-btn:hover { background:#1e40af; }
-#status { font-size:0.95rem; color:#475569; margin-top:10px; }
-.bottom-buttons { display:flex; justify-content:center; gap:12px; margin-top:20px; }
-.bottom-buttons a { text-decoration:none; padding:10px 18px; border-radius:8px; color:#fff; font-weight:600; background:#1e293b; transition:0.3s; }
-.bottom-buttons a:hover { background:#3b82f6; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure PDF | EasyUseHub</title>
+    <style>
+        :root { --primary: #2563eb; --success: #22c55e; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
+        h2 { margin-bottom: 1rem; color: #1e293b; }
+        .upload-area { border: 2px dashed #cbd5e1; padding: 2rem; border-radius: 12px; cursor: pointer; margin-bottom: 1.5rem; transition: 0.3s; }
+        .upload-area:hover { border-color: var(--primary); background: #f1f5f9; }
+        input[type="password"] { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 8px; background: var(--success); color: white; font-weight: 600; cursor: pointer; font-size: 1rem; }
+        button:hover { opacity: 0.9; }
+        #status { margin-top: 1rem; font-size: 0.9rem; color: #64748b; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
 
-<div class="container">
-<h2>🔐 Protect PDF</h2>
-<div class="upload" onclick="document.getElementById('file').click()">📁 Click to upload PDF</div>
-<input type="file" id="file" accept="application/pdf" hidden>
-<input type="password" id="password" placeholder="Enter password">
-<button onclick="protectPDF()">Protect PDF</button>
-<button id="download-btn">📥 Download Protected PDF</button>
-<p id="status">No file selected</p>
+<div class="card">
+    <h2>🔐 Protect PDF</h2>
+    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Upload a file and set a password</p>
 
-<div class="bottom-buttons">
-<a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1">📂 All PDF Tools</a>
-<a href="https://easyusehub.blogspot.com/?m=1">🏠 Home</a>
-</div>
+    <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <span id="fileText">📁 Click to upload PDF</span>
+    </div>
+
+    <input type="file" id="fileInput" accept="application/pdf" class="hidden">
+    <input type="password" id="password" placeholder="Enter strong password">
+    
+    <button onclick="uploadAndProtect()" id="submitBtn">Protect & Download</button>
+    
+    <p id="status"></p>
 </div>
 
 <script>
-let file = null;
-let downloadUrl = '';
-const API_THRESHOLD = 5 * 1024 * 1024; // 5MB threshold for API call
+    const fileInput = document.getElementById('fileInput');
+    const fileText = document.getElementById('fileText');
+    const status = document.getElementById('status');
 
-document.getElementById('file').addEventListener('change', e=>{
-    file = e.target.files[0];
-    document.getElementById('status').textContent = file ? file.name : 'No file selected';
-});
+    // Show selected filename
+    fileInput.onchange = () => {
+        if(fileInput.files[0]) fileText.innerText = "📄 " + fileInput.files[0].name;
+    };
 
-async function protectPDF(){
-    if(!file){ alert('Upload PDF first'); return; }
-    const password = document.getElementById('password').value;
-    if(!password){ alert('Enter password'); return; }
-    
-    document.getElementById('status').textContent = "Processing...";
-    
-    // Small file → client-side
-    if(file.size <= API_THRESHOLD){
-        try {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-            pdfDoc.encrypt({
-                userPassword: password,
-                ownerPassword: password,
-                permissions: { printing:'highResolution', modifying:false, copying:false }
-            });
-            const pdfBytes = await pdfDoc.save();
-            const blob = new Blob([pdfBytes], {type:'application/pdf'});
-            downloadUrl = URL.createObjectURL(blob);
-            const dlBtn = document.getElementById('download-btn');
-            dlBtn.style.display='block';
-            dlBtn.onclick = ()=> {
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.download = 'protected.pdf';
-                a.click();
-            };
-            document.getElementById('status').textContent = "✔ PDF ready! Click Download.";
-        } catch(e){
-            console.error(e);
-            document.getElementById('status').textContent = "❌ Error protecting PDF!";
+    async function uploadAndProtect() {
+        const file = fileInput.files[0];
+        const password = document.getElementById('password').value;
+
+        if (!file || !password) {
+            alert("Please select a file and enter a password.");
+            return;
         }
-    } else {
-        // Large file → API call
+
+        status.innerText = "⏳ Processing on server...";
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+
+        // Prepare data for API
         const formData = new FormData();
         formData.append('pdf', file);
         formData.append('password', password);
-        
-        fetch('/api/protect', { method:'POST', body: formData })
-        .then(res=>{
-            if(!res.ok) throw new Error('API error');
-            return res.blob();
-        })
-        .then(blob=>{
-            downloadUrl = URL.createObjectURL(blob);
-            const dlBtn = document.getElementById('download-btn');
-            dlBtn.style.display='block';
-            dlBtn.onclick = ()=> {
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.download = 'protected.pdf';
-                a.click();
-            };
-            document.getElementById('status').textContent = "✔ Protected via API! Click Download.";
-        })
-        .catch(()=>{
-            document.getElementById('status').textContent = "❌ Error via API!";
-        });
+
+        try {
+            const response = await fetch('/api/protect', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) throw new Error('Server error occurred');
+
+            // Receive the protected PDF as a Blob
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            
+            // Create a hidden link to trigger download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `protected_${file.name}`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            status.innerHTML = "<span style='color:green'>✅ Success! Downloaded.</span>";
+        } catch (err) {
+            console.error(err);
+            status.innerHTML = "<span style='color:red'>❌ Error connecting to server.</span>";
+        } finally {
+            btn.disabled = false;
+        }
     }
-}
 </script>
 
 </body>
