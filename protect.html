@@ -1,79 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Protect PDF</title>
-<style>
-body{font-family:Arial;text-align:center;background:#f9fafb;margin-top:120px;}
-.container{background:white;padding:30px;width:350px;margin:auto;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,0.1);}
-h2{margin-bottom:20px;}
-.upload{border:2px dashed #ccc;padding:20px;margin-bottom:15px;border-radius:10px;cursor:pointer;}
-.upload:hover{background:#f1f5f9;}
-input{width:100%;padding:10px;margin-top:10px;border-radius:5px;border:1px solid #ccc;}
-button{width:100%;padding:10px;margin-top:15px;background:#22c55e;color:white;border:none;border-radius:5px;cursor:pointer;}
-button:hover{background:#16a34a;}
-#status{margin-top:15px;color:#555;font-size:14px;}
-.navbar{position:fixed;top:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px;background:#1e293b;z-index:1000;}
-.navbar a{width:200px;text-align:center;padding:8px 12px;border-radius:5px;text-decoration:none;font-weight:bold;color:white;}
-.navbar a.all{background:#22c55e;}
-.navbar a.home{background:#3b82f6;}
-</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protect PDF | EasyUseHub</title>
+<link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
 
-<!-- Navbar -->
-<div class="navbar">
-  <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="all">📂 All PDF Tools</a>
-  <a href="https://easyusehub.blogspot.com/?m=1" class="home">🏠 Home</a>
-</div>
+<div class="protect-container">
+    <h1>🔐 Protect Your PDF</h1>
+    <p class="subtitle">
+        Upload your PDF and add a password to secure it instantly.
+    </p>
 
-<!-- Tool Container -->
-<div class="container">
-<h2>🔐 Protect PDF</h2>
-<div class="upload" onclick="document.getElementById('file').click()">Click to upload PDF</div>
-<input type="file" id="file" accept="application/pdf" hidden>
-<input type="password" id="password" placeholder="Enter password">
-<button onclick="protectPDF()">Protect PDF</button>
-<p id="status">No file selected</p>
+    <!-- File Upload -->
+    <input type="file" id="file" accept="application/pdf">
+
+    <!-- Password Input -->
+    <input type="password" id="password" placeholder="Enter password">
+
+    <!-- Protect Button -->
+    <button onclick="protectPDF()">Protect PDF</button>
+
+    <!-- Status -->
+    <p id="status">No file selected</p>
 </div>
 
 <script>
 let file = null;
-document.getElementById('file').addEventListener('change', e=>{
+document.getElementById('file').addEventListener('change', function(e){
     file = e.target.files[0];
     document.getElementById('status').innerText = file ? file.name : 'No file selected';
 });
 
 function protectPDF(){
     if(!file){ alert('Upload PDF first'); return; }
-    let password = document.getElementById('password').value;
-    if(!password){ alert('Enter password'); return; }
+    let pass = document.getElementById('password').value;
+    if(!pass){ alert('Enter password'); return; }
 
     document.getElementById('status').innerText = "Protecting PDF...";
 
-    const reader = new FileReader();
-    reader.onload = function(){
-        fetch('/api/protect', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                pdf: reader.result.split(',')[1], // base64
-                password: password
-            })
-        })
-        .then(res => res.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'protected.pdf';
-            a.click();
-            document.getElementById('status').innerText = "Download ready!";
-        })
-        .catch(()=>{
-            document.getElementById('status').innerText = "Error!";
-        });
-    };
-    reader.readAsDataURL(file);
+    // Demo: remove setTimeout if using API
+    setTimeout(()=>{
+        document.getElementById('status').innerText = "PDF protected successfully (Demo)";
+    },1500);
 }
 </script>
 
