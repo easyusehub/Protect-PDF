@@ -9,13 +9,14 @@
         :root { --primary: #22c55e; --dark: #1e293b; --bg: #f8fafc; }
         body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; flex-direction: column; }
         .card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 90%; max-width: 400px; text-align: center; }
-        .upload-zone { border: 2px dashed #cbd5e1; padding: 2rem; border-radius: 15px; cursor: pointer; margin-bottom: 1rem; color: #64748b; }
-        input[type="password"] { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; }
-        .btn-green { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .upload-zone { border: 2px dashed #cbd5e1; padding: 2rem; border-radius: 15px; cursor: pointer; margin-bottom: 1rem; color: #64748b; background: #fff; }
+        input[type="password"] { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        .btn-green { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+        .btn-green:hover { background: #16a34a; }
         .nav-btns { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
-        .nav-link { text-decoration: none; color: white; background: #64748b; padding: 10px 15px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .nav-link { text-decoration: none; color: white; background: #64748b; padding: 10px 15px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; }
         .nav-link.dark { background: var(--dark); }
-        #status { margin-top: 10px; font-size: 0.9rem; }
+        #status { margin-top: 15px; font-size: 0.9rem; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -24,14 +25,14 @@
     <h1>🔐 Protect PDF</h1>
     <p style="color:#64748b; margin-bottom:20px;">Securely encrypt your PDF with a password</p>
 
-    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+    <div class="upload-zone" onclick="document.getElementById('fileInput').click()" id="dropArea">
         <span id="fileName">📁 Click to upload PDF<br><small>Max size: 50MB</small></span>
     </div>
     
     <input type="file" id="fileInput" accept="application/pdf" style="display:none">
     <input type="password" id="passInput" placeholder="Enter password">
     
-    <button class="btn-green" onclick="protectPDF()">Protect & Download</button>
+    <button class="btn-green" id="mainBtn" onclick="protectPDF()">Protect & Download</button>
     
     <div id="status"></div>
 
@@ -45,46 +46,70 @@
     const fileInput = document.getElementById('fileInput');
     const fileName = document.getElementById('fileName');
     const status = document.getElementById('status');
+    const mainBtn = document.getElementById('mainBtn');
 
     fileInput.onchange = () => {
-        if(fileInput.files[0]) fileName.innerHTML = "📄 <b>" + fileInput.files[0].name + "</b>";
+        if(fileInput.files[0]) {
+            fileName.innerHTML = "📄 <b style='color:#2563eb'>" + fileInput.files[0].name + "</b>";
+            status.innerHTML = "";
+        }
     };
 
     async function protectPDF() {
         const file = fileInput.files[0];
         const password = document.getElementById('passInput').value;
 
-        if (!file || !password) {
-            alert("Please select a file and enter a password!");
-            return;
-        }
+        if (!file) return alert("Please select a PDF file!");
+        if (!password) return alert("Please set a password!");
 
-        status.innerHTML = "⏳ Processing locally...";
+        mainBtn.disabled = true;
+        mainBtn.innerText = "Processing...";
+        status.innerHTML = "⏳ Encrypting... Please wait.";
+        status.style.color = "#2563eb";
 
         try {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+            // Using a FileReader for better compatibility with older mobile browsers
+            const reader = new FileReader();
+            reader.onload = async function() {
+                try {
+                    const bytes = new Uint8Array(reader.result);
+                    const pdfDoc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
 
-            // Apply encryption locally in the browser
-            pdfDoc.encrypt({
-                userPassword: password,
-                ownerPassword: 'secure_owner_key',
-                permissions: { printing: 'highResolution', modifying: false, copying: false }
-            });
+                    // Apply standard protection
+                    pdfDoc.encrypt({
+                        userPassword: password,
+                        ownerPassword: Math.random().toString(36).slice(-10), // Random owner pass
+                        permissions: { printing: 'highResolution', modifying: false, copying: false }
+                    });
 
-            const pdfBytes = await pdfDoc.save();
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            
-            // Download
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `protected_${file.name}`;
-            link.click();
+                    const pdfBytes = await pdfDoc.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `protected_${file.name}`;
+                    link.click();
 
-            status.innerHTML = "<span style='color:green'>✅ Success! Downloaded.</span>";
+                    status.innerHTML = "✅ Success! File Downloaded.";
+                    status.style.color = "green";
+                    mainBtn.disabled = false;
+                    mainBtn.innerText = "Protect & Download";
+                } catch (innerError) {
+                    console.error(innerError);
+                    status.innerHTML = "❌ Error: This PDF might be restricted or corrupt.";
+                    status.style.color = "red";
+                    mainBtn.disabled = false;
+                    mainBtn.innerText = "Try Again";
+                }
+            };
+            reader.readAsArrayBuffer(file);
+
         } catch (e) {
             console.error(e);
-            status.innerHTML = "<span style='color:red'>❌ Error: Encryption failed.</span>";
+            status.innerHTML = "❌ Error: Could not process file.";
+            status.style.color = "red";
+            mainBtn.disabled = false;
+            mainBtn.innerText = "Try Again";
         }
     }
 </script>
