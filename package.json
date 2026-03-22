@@ -1,11 +1,15 @@
 {
   "name": "protect-pdf",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Hybrid Protect PDF Tool",
+  "main": "api/protect.js",
+  "scripts": {
+    "start": "node api/protect.js"
+  },
   "dependencies": {
     "express": "^4.18.2",
     "express-fileupload": "^1.4.0",
-    "form-data": "^4.0.0",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.9",
+    "form-data": "^4.0.0"
   }
 }
