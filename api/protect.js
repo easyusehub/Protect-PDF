@@ -3,12 +3,13 @@ const fileUpload = require('express-fileupload');
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 
-const router = express.Router();
-const API_KEY = process.env.ILOVEPDF_PUBLIC_KEY; // ILovePDF secret key
+const app = express();
+app.use(fileUpload());
 
-router.post('/', async (req, res) => {
+const API_KEY = process.env.ILOVEPDF_PUBLIC_KEY; // Set in Vercel Environment
+
+app.post('/', async (req, res) => {
     if (!req.files || !req.files.pdf) return res.status(400).send('No file uploaded');
-
     const file = req.files.pdf;
     const password = req.body.password;
 
@@ -23,14 +24,13 @@ router.post('/', async (req, res) => {
             body: formData
         });
 
-        if (!response.ok) throw new Error('API error');
-
         const buffer = await response.buffer();
-        res.setHeader('Content-Disposition', 'attachment; filename=protected.pdf');
+        res.setHeader('Content-Disposition','attachment; filename=protected.pdf');
         res.send(buffer);
+
     } catch (err) {
-        res.status(500).send('Error protecting PDF');
+        res.status(500).send('Error processing PDF');
     }
 });
 
-module.exports = router;
+app.listen(3000, () => console.log('Server running on port 3000'));
