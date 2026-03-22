@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protect PDF | EasyUseHub</title>
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.standard.min.js"></script>
     <style>
         :root { --primary: #22c55e; --dark: #1e293b; --bg: #f8fafc; }
         body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; flex-direction: column; padding: 15px; }
@@ -12,7 +12,7 @@
         .upload-area { border: 2px dashed #cbd5e1; padding: 35px 15px; border-radius: 15px; cursor: pointer; margin-bottom: 15px; background: #fff; }
         input[type="password"] { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
         .btn { background: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-        #status { margin-top: 15px; padding: 12px; border-radius: 8px; font-size: 14px; display: none; line-height: 1.4; }
+        #status { margin-top: 15px; padding: 12px; border-radius: 8px; font-size: 14px; display: none; }
         .nav-btns { display: flex; gap: 10px; margin-top: 25px; justify-content: center; }
         .nav-link { text-decoration: none; color: white; background: #64748b; padding: 12px 18px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; }
     </style>
@@ -44,10 +44,10 @@
 
     fileInput.onchange = () => { if(fileInput.files[0]) document.getElementById('nameLabel').innerText = fileInput.files[0].name; };
 
-    function showStatus(msg, type = 'info') {
+    function log(msg, type = 'info') {
         status.style.display = "block";
-        status.style.background = type === 'error' ? "#fee2e2" : "#e0f2fe";
-        status.style.color = type === 'error' ? "#991b1b" : "#075985";
+        status.style.background = type === 'error' ? "#fee2e2" : "#dcfce7";
+        status.style.color = type === 'error' ? "#991b1b" : "#15803d";
         status.innerText = msg;
     }
 
@@ -57,30 +57,26 @@
 
         if (!file || !pass) return alert("Please select a file and enter a password.");
 
-        showStatus("⏳ Processing... Please wait.");
+        log("⏳ Encrypting... please wait.");
         lockBtn.disabled = true;
 
         try {
-            // Check if PDFLib is loaded
-            if (typeof window.PDFLib === 'undefined') {
-                throw new Error("PDF Library not loaded. Please refresh the page.");
-            }
-
-            const { PDFDocument } = window.PDFLib;
-            const arrayBuffer = await file.arrayBuffer();
+            // 1. Get Library references
+            const { PDFDocument } = PDFLib;
             
-            // Load the document
+            // 2. Load the PDF as an ArrayBuffer
+            const arrayBuffer = await file.arrayBuffer();
             const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
 
-            // ENCRYPT LOGIC
-            // Ensure we are calling it on the right instance
+            // 3. Double Check encryption support
             if (typeof pdfDoc.encrypt !== 'function') {
-                throw new Error("Your browser is using an outdated version of the library. Clear cache and refresh.");
+                throw new Error("This browser loaded the wrong library version. Try clearing your browser cache.");
             }
 
+            // 4. Apply Encryption
             await pdfDoc.encrypt({
                 userPassword: pass,
-                ownerPassword: 'owner_' + Math.random().toString(36).substr(2, 9),
+                ownerPassword: 'owner_' + Math.random().toString(36).substring(7),
                 permissions: {
                     printing: 'highResolution',
                     modifying: false,
@@ -88,24 +84,20 @@
                 }
             });
 
+            // 5. Save and Download
             const pdfBytes = await pdfDoc.save();
             const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "protected_" + file.name;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = "protected_" + file.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-            showStatus("✅ Success! Your file has been downloaded.", "success");
-            status.style.background = "#dcfce7";
-            status.style.color = "#15803d";
-
+            log("✅ Success! PDF is protected.");
         } catch (e) {
             console.error(e);
-            showStatus("❌ ERROR: " + e.message, "error");
+            log("❌ ERROR: " + e.message, "error");
         } finally {
             lockBtn.disabled = false;
         }
