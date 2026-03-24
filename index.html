@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Protect PDF – EasyUseHub PRO</title>
+<title>Protect PDF – EasyUseHub Free</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{font-family:Arial;background:#f5f7fa;margin:0;text-align:center;}
@@ -23,7 +23,7 @@ button{padding:12px 20px;border:none;border-radius:6px;cursor:pointer;margin:5px
 <body>
 
 <header>
-<h2>EasyUseHub – Protect PDF PRO</h2>
+<h2>EasyUseHub – Protect PDF</h2>
 </header>
 
 <main>
@@ -46,41 +46,41 @@ button{padding:12px 20px;border:none;border-radius:6px;cursor:pointer;margin:5px
 
 <script>
 async function protectPDF(){
-  const file = document.getElementById("file").files[0];
-  const password = document.getElementById("password").value;
-  const msg = document.getElementById("msg");
-  const progressContainer = document.getElementById("progressContainer");
-  const progressBar = document.getElementById("progressBar");
-  const sizeInfo = document.getElementById("sizeInfo");
+    const file = document.getElementById("file").files[0];
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("msg");
+    const progressContainer = document.getElementById("progressContainer");
+    const progressBar = document.getElementById("progressBar");
+    const sizeInfo = document.getElementById("sizeInfo");
 
-  if(!file || !password){ msg.innerText="Select file and enter password"; return; }
+    if(!file || !password){ msg.innerText="Select file and enter password"; return; }
 
-  msg.innerText=""; progressContainer.style.display="block"; progressBar.style.width="0%";
-  sizeInfo.innerText = `Original Size: ${(file.size/1024/1024).toFixed(2)} MB`;
+    msg.innerText=""; progressContainer.style.display="block"; progressBar.style.width="0%";
+    sizeInfo.innerText = `Original Size: ${(file.size/1024/1024).toFixed(2)} MB`;
 
-  try{
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("password", password);
+    try{
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("password", password);
 
-    const response = await fetch("/api/protect", {method:"POST", body:formData});
-    if(!response.ok) throw new Error("Server failed to process PDF");
+        const response = await fetch("/api/protect", { method:"POST", body:formData });
+        if(!response.ok) throw new Error("Server failed to process PDF");
 
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "protected.pdf";
-    a.click();
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "protected.pdf";
+        a.click();
 
-    progressBar.style.width="100%";
-    sizeInfo.innerText += ` → Protected Size: ${(blob.size/1024/1024).toFixed(2)} MB`;
-    msg.innerText="✅ PDF Protected Successfully!";
-  }catch(e){
-    console.error(e);
-    msg.innerText="❌ Error processing PDF: "+e.message;
-  }
+        progressBar.style.width="100%";
+        sizeInfo.innerText += ` → Protected Size: ${(blob.size/1024/1024).toFixed(2)} MB`;
+        msg.innerText="✅ PDF Protected Successfully!";
+    }catch(e){
+        console.error(e);
+        msg.innerText="❌ Error processing PDF: "+e.message;
+    }
 }
 </script>
 
