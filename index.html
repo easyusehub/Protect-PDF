@@ -5,45 +5,90 @@
 <title>Protect PDF – EasyUseHub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{font-family:Arial;text-align:center;margin:0;padding:0;background:#f5f7fa;}
-header{padding:15px;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.1);}
-button{padding:15px 25px;margin:50px 0;border:none;border-radius:6px;cursor:pointer;background:#2563eb;color:#fff;font-size:16px;}
-#ad-top, #ad-middle{margin:20px 0;padding:20px;background:#eee;}
-#iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;}
-#toolFrame{width:100%;height:100%;border:none;}
-#iframeOverlay button{position:absolute;top:10px;right:10px;z-index:1000;padding:10px 15px;}
+body {
+    margin:0;
+    padding:0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+}
+header {
+    background: #fff;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,.1);
+}
+header h1 {
+    margin:0;
+    font-size: 22px;
+}
+#ad-top, #ad-middle {
+    margin: 20px auto;
+    padding: 20px;
+    background: #eee;
+    width: 90%;
+    border-radius: 8px;
+    text-align: center;
+}
+.widget-container {
+    width: 90%;
+    max-width: 900px;
+    margin: 0 auto 50px auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    background: #fff;
+}
+.upload-label {
+    display: inline-block;
+    margin: 20px 0;
+    padding: 15px 30px;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
 </style>
 </head>
 <body>
 
 <header>
-<h2>Protect PDF – EasyUseHub</h2>
+<h1>Protect PDF – EasyUseHub</h1>
 </header>
 
 <div id="ad-top">Top Ad Placeholder</div>
 
-<main>
-<p>Click the button below to go to ILovePDF Protect PDF inside your site.</p>
-<button onclick="openIframe('https://www.ilovepdf.com/protect-pdf')">Go</button>
-</main>
+<div class="widget-container">
+    <p style="text-align:center; margin:20px 0;">Click the Upload button below to protect your PDF</p>
+    
+    <!-- Hidden file input to trigger widget -->
+    <input type="file" id="file" style="display:none;" onchange="loadPDF24Widget()">
+    <label class="upload-label" for="file">Upload File</label>
+    
+    <!-- PDF24 Widget container -->
+    <div id="pdf24WidgetArea"></div>
+</div>
 
 <div id="ad-middle">Middle Ad Placeholder</div>
 
-<!-- Iframe Overlay -->
-<div id="iframeOverlay">
-  <button onclick="closeIframe()">Back</button>
-  <iframe id="toolFrame"></iframe>
-</div>
-
+<!-- PDF24 Widget JS -->
+<script src="https://tools.pdf24.org/static/js/widget.js"></script>
 <script>
-function openIframe(url){
-    document.getElementById('toolFrame').src = url;
-    document.getElementById('iframeOverlay').style.display = 'block';
-}
+function loadPDF24Widget() {
+    const fileInput = document.getElementById('file');
+    if (!fileInput.files.length) return;
 
-function closeIframe(){
-    document.getElementById('iframeOverlay').style.display = 'none';
-    document.getElementById('toolFrame').src = '';
+    // Load Protect PDF widget
+    pdf24.loadWidget('lock-pdf', {
+        containerId: 'pdf24WidgetArea',
+        langCode: 'en',
+        widgetConfig: {
+            theme: 'lightTheme'
+        },
+        readyCallback: function() {
+            console.log('PDF24 Protect PDF widget loaded');
+        }
+    });
 }
 </script>
 
