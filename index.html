@@ -5,19 +5,10 @@
 <title>Protect PDF – EasyUseHub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{font-family:Arial;background:#f5f7fa;margin:0;text-align:center;}
-header{background:#fff;padding:15px;box-shadow:0 2px 5px rgba(0,0,0,.1);}
-main{max-width:700px;margin:20px auto;background:#fff;padding:30px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,.1);}
-input{margin:10px 0;padding:12px;width:80%;}
-button{padding:12px 20px;border:none;border-radius:6px;margin:5px;cursor:pointer;}
-.protect{background:#2563eb;color:#fff;}
-.redirect{background:#f59e0b;color:#fff;}
-.home{background:#10b981;color:#fff;}
+body{font-family:Arial;text-align:center;margin:0;padding:0;background:#f5f7fa;}
+header{padding:15px;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.1);}
+button{padding:15px 25px;margin:50px 0;border:none;border-radius:6px;cursor:pointer;background:#2563eb;color:#fff;font-size:16px;}
 #ad-top, #ad-middle{margin:20px 0;padding:20px;background:#eee;}
-#progressContainer{width:80%;margin:15px auto;background:#ddd;border-radius:6px;overflow:hidden;display:none;}
-#progressBar{width:0%;height:20px;background:#2563eb;}
-#sizeInfo{margin-top:10px;font-size:14px;color:#333;}
-#msg{margin-top:15px;font-weight:bold;}
 #iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;}
 #toolFrame{width:100%;height:100%;border:none;}
 #iframeOverlay button{position:absolute;top:10px;right:10px;z-index:1000;padding:10px 15px;}
@@ -29,91 +20,27 @@ button{padding:12px 20px;border:none;border-radius:6px;margin:5px;cursor:pointer
 <h2>Protect PDF – EasyUseHub</h2>
 </header>
 
-<main>
 <div id="ad-top">Top Ad Placeholder</div>
 
-<input type="file" id="file"><br>
-<input type="password" id="password" placeholder="Enter password"><br>
-<button class="protect" onclick="protectPDF()">Protect PDF</button>
-<button class="redirect" onclick="redirectExternal()">Open External Tool</button>
-
-<div id="progressContainer"><div id="progressBar"></div></div>
-<div id="sizeInfo"></div>
-<div id="msg"></div>
+<main>
+<p>Click the button below to go to ILovePDF Protect PDF inside your site.</p>
+<button onclick="openIframe('https://www.ilovepdf.com/protect-pdf')">Go</button>
+</main>
 
 <div id="ad-middle">Middle Ad Placeholder</div>
 
-<div style="margin-top:30px;">
-<button class="home" onclick="window.open('home.html','_self')">Home</button>
-</div>
-</main>
-
-<!-- Iframe overlay for redirect -->
+<!-- Iframe Overlay -->
 <div id="iframeOverlay">
   <button onclick="closeIframe()">Back</button>
   <iframe id="toolFrame"></iframe>
 </div>
 
 <script>
-// File size info
-document.getElementById('file').addEventListener('change', function(){
-  const file = this.files[0];
-  if(file){
-    document.getElementById('sizeInfo').innerText = `Selected File: ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
-  }
-});
-
-// Protect PDF via backend
-async function protectPDF(){
-    const fileInput = document.getElementById("file");
-    const password = document.getElementById("password").value;
-    const msg = document.getElementById("msg");
-    const progressContainer = document.getElementById("progressContainer");
-    const progressBar = document.getElementById("progressBar");
-    const sizeInfo = document.getElementById("sizeInfo");
-
-    if(!fileInput.files.length || !password){
-        msg.innerText="Select a file and enter a password";
-        return;
-    }
-
-    const file = fileInput.files[0];
-    progressContainer.style.display="block";
-    progressBar.style.width="0%";
-    sizeInfo.innerText = `Original Size: ${(file.size/1024/1024).toFixed(2)} MB`;
-    msg.innerText = "Processing...";
-
-    try{
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("password", password);
-
-        const response = await fetch("/api/protect", { method:"POST", body:formData });
-        if(!response.ok) throw new Error("Server failed to process PDF");
-
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "protected.pdf";
-        a.click();
-
-        progressBar.style.width="100%";
-        sizeInfo.innerText += ` → Protected Size: ${(blob.size/1024/1024).toFixed(2)} MB`;
-        msg.innerText="✅ PDF Protected Successfully!";
-    }catch(e){
-        console.error(e);
-        msg.innerText="❌ Error: "+e.message;
-    }
-}
-
-// Redirect / External tool iframe
-function redirectExternal(){
-    const externalURL = "https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1";
-    document.getElementById('toolFrame').src = externalURL;
+function openIframe(url){
+    document.getElementById('toolFrame').src = url;
     document.getElementById('iframeOverlay').style.display = 'block';
 }
+
 function closeIframe(){
     document.getElementById('iframeOverlay').style.display = 'none';
     document.getElementById('toolFrame').src = '';
