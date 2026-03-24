@@ -4,27 +4,22 @@
 <meta charset="UTF-8">
 <title>Protect PDF – EasyUseHub PRO</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- ILovePDF SDK -->
-<script src="https://sdk.ilovepdf.com/v1/ilovepdf.min.js" defer></script>
-
 <style>
-body{ font-family:Arial; background:#f5f7fa; margin:0; text-align:center; }
-header{ background:#fff; padding:15px; box-shadow:0 2px 5px rgba(0,0,0,.1);}
-main{ max-width:700px; margin:40px auto; background:#fff; padding:30px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,.1);}
-input{ margin:10px 0; padding:12px; width:80%; }
-button{ padding:12px 20px; border:none; border-radius:6px; cursor:pointer; margin:5px; }
-.protect{ background:#2563eb; color:#fff; }
-.premium{ background:#f59e0b; color:#fff; }
-.home{ background:#10b981; color:#fff; }
-#ad{ margin:20px 0; padding:20px; background:#eee; }
-#msg{ margin-top:20px; font-weight:bold; }
-#progressContainer{ width:80%; margin:15px auto; background:#ddd; border-radius:6px; overflow:hidden; display:none; }
-#progressBar{ width:0%; height:20px; background:#2563eb; }
-#sizeInfo{ margin-top:10px; font-size:14px; color:#333; }
+body{font-family:Arial;background:#f5f7fa;margin:0;text-align:center;}
+header{background:#fff;padding:15px;box-shadow:0 2px 5px rgba(0,0,0,.1);}
+main{max-width:700px;margin:40px auto;background:#fff;padding:30px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,.1);}
+input{margin:10px 0;padding:12px;width:80%;}
+button{padding:12px 20px;border:none;border-radius:6px;cursor:pointer;margin:5px;}
+.protect{background:#2563eb;color:#fff;}
+.premium{background:#f59e0b;color:#fff;}
+.home{background:#10b981;color:#fff;}
+#ad{margin:20px 0;padding:20px;background:#eee;}
+#msg{margin-top:20px;font-weight:bold;}
+#progressContainer{width:80%;margin:15px auto;background:#ddd;border-radius:6px;overflow:hidden;display:none;}
+#progressBar{width:0%;height:20px;background:#2563eb;}
+#sizeInfo{margin-top:10px;font-size:14px;color:#333;}
 </style>
 </head>
-
 <body>
 
 <header>
@@ -32,20 +27,13 @@ button{ padding:12px 20px; border:none; border-radius:6px; cursor:pointer; margi
 </header>
 
 <main>
-
 <div id="ad">Top Ad Placeholder</div>
-
 <p>Upload PDF → Enter password → Download protected PDF</p>
-
 <input type="file" id="file"><br>
 <input type="password" id="password" placeholder="Enter password"><br>
+<button class="protect" onclick="protectPDF()">Protect PDF</button>
 
-<button class="protect" id="protectBtn" disabled>Protect PDF</button>
-
-<div id="progressContainer">
-  <div id="progressBar"></div>
-</div>
-
+<div id="progressContainer"><div id="progressBar"></div></div>
 <div id="sizeInfo"></div>
 <div id="msg"></div>
 
@@ -53,80 +41,45 @@ button{ padding:12px 20px; border:none; border-radius:6px; cursor:pointer; margi
 <button class="premium" onclick="window.open('https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1')">All PDF Tools</button>
 <button class="home" onclick="window.open('https://easyusehub.blogspot.com/?m=1')">Home</button>
 </div>
-
 </main>
 
 <script>
-// Enable Protect button only after SDK is fully loaded
-window.addEventListener("load", () => {
-    if(typeof ILovePDF !== "undefined"){
-        document.getElementById("protectBtn").disabled = false;
-    } else {
-        alert("ILovePDF SDK failed to load. Refresh the page.");
-    }
-});
-
 async function protectPDF(){
-    const file = document.getElementById("file").files[0];
-    const password = document.getElementById("password").value;
-    const msg = document.getElementById("msg");
-    const progressContainer = document.getElementById("progressContainer");
-    const progressBar = document.getElementById("progressBar");
-    const sizeInfo = document.getElementById("sizeInfo");
+  const file = document.getElementById("file").files[0];
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
+  const progressContainer = document.getElementById("progressContainer");
+  const progressBar = document.getElementById("progressBar");
+  const sizeInfo = document.getElementById("sizeInfo");
 
-    if(!file || !password){
-        msg.innerText = "Select file and enter password";
-        return;
-    }
+  if(!file || !password){ msg.innerText="Select file and enter password"; return; }
 
-    if(typeof ILovePDF === "undefined"){
-        alert("ILovePDF SDK not loaded yet");
-        return;
-    }
+  msg.innerText=""; progressContainer.style.display="block"; progressBar.style.width="0%";
+  sizeInfo.innerText = `Original Size: ${(file.size/1024/1024).toFixed(2)} MB`;
 
-    msg.innerText = "";
-    progressContainer.style.display = "block";
-    progressBar.style.width = "0%";
-    sizeInfo.innerText = `Original Size: ${(file.size/1024/1024).toFixed(2)} MB`;
+  try{
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("password", password);
 
-    try{
-        // Step 1: get auth from backend
-        const auth = await fetch("/api/auth").then(r=>r.json());
+    const response = await fetch("/api/protect", {method:"POST", body:formData});
+    if(!response.ok) throw new Error("Server failed to process PDF");
 
-        const ilovepdf = new ILovePDF({
-            publicKey: auth.public_key,
-            signature: auth.signature,
-            expires: auth.expires
-        });
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
 
-        const task = await ilovepdf.newTask("protect");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "protected.pdf";
+    a.click();
 
-        task.on("progress", (percent)=>{
-            progressBar.style.width = percent + "%";
-        });
-
-        await task.start();
-        await task.addFile(file);
-
-        await task.process({ password });
-
-        const result = await task.download();
-        const blob = new Blob([result], {type:"application/pdf"});
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "protected.pdf";
-        a.click();
-
-        progressBar.style.width = "100%";
-        sizeInfo.innerText += ` → Protected Size: ${(blob.size/1024/1024).toFixed(2)} MB`;
-        msg.innerText = "✅ PDF Protected Successfully!";
-
-    }catch(e){
-        console.error(e);
-        msg.innerText = "❌ Error processing PDF: " + (e.message || "");
-    }
+    progressBar.style.width="100%";
+    sizeInfo.innerText += ` → Protected Size: ${(blob.size/1024/1024).toFixed(2)} MB`;
+    msg.innerText="✅ PDF Protected Successfully!";
+  }catch(e){
+    console.error(e);
+    msg.innerText="❌ Error processing PDF: "+e.message;
+  }
 }
 </script>
 
