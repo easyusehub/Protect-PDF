@@ -40,7 +40,7 @@ button{ padding:12px 20px; border:none; border-radius:6px; cursor:pointer; margi
 <input type="file" id="file"><br>
 <input type="password" id="password" placeholder="Enter password"><br>
 
-<button class="protect" onclick="protectPDF()">Protect PDF</button>
+<button class="protect" id="protectBtn" disabled>Protect PDF</button>
 
 <div id="progressContainer">
   <div id="progressBar"></div>
@@ -57,69 +57,76 @@ button{ padding:12px 20px; border:none; border-radius:6px; cursor:pointer; margi
 </main>
 
 <script>
+// Enable Protect button only after SDK is fully loaded
+window.addEventListener("load", () => {
+    if(typeof ILovePDF !== "undefined"){
+        document.getElementById("protectBtn").disabled = false;
+    } else {
+        alert("ILovePDF SDK failed to load. Refresh the page.");
+    }
+});
+
 async function protectPDF(){
-  const file = document.getElementById("file").files[0];
-  const password = document.getElementById("password").value;
-  const msg = document.getElementById("msg");
-  const progressContainer = document.getElementById("progressContainer");
-  const progressBar = document.getElementById("progressBar");
-  const sizeInfo = document.getElementById("sizeInfo");
+    const file = document.getElementById("file").files[0];
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("msg");
+    const progressContainer = document.getElementById("progressContainer");
+    const progressBar = document.getElementById("progressBar");
+    const sizeInfo = document.getElementById("sizeInfo");
 
-  if(!file || !password){
-    msg.innerText = "Select file and enter password";
-    return;
-  }
+    if(!file || !password){
+        msg.innerText = "Select file and enter password";
+        return;
+    }
 
-  if(typeof ILovePDF === 'undefined'){
-    alert("ILovePDF SDK not loaded yet");
-    return;
-  }
+    if(typeof ILovePDF === "undefined"){
+        alert("ILovePDF SDK not loaded yet");
+        return;
+    }
 
-  msg.innerText = "";
-  progressContainer.style.display = "block";
-  progressBar.style.width = "0%";
-  sizeInfo.innerText = `Original Size: ${(file.size/1024/1024).toFixed(2)} MB`;
+    msg.innerText = "";
+    progressContainer.style.display = "block";
+    progressBar.style.width = "0%";
+    sizeInfo.innerText = `Original Size: ${(file.size/1024/1024).toFixed(2)} MB`;
 
-  try{
-    // Get auth from Vercel API
-    const auth = await fetch("/api/auth").then(r=>r.json());
+    try{
+        // Step 1: get auth from backend
+        const auth = await fetch("/api/auth").then(r=>r.json());
 
-    const ilovepdf = new ILovePDF({
-      publicKey: auth.public_key,
-      signature: auth.signature,
-      expires: auth.expires
-    });
+        const ilovepdf = new ILovePDF({
+            publicKey: auth.public_key,
+            signature: auth.signature,
+            expires: auth.expires
+        });
 
-    const task = await ilovepdf.newTask("protect");
+        const task = await ilovepdf.newTask("protect");
 
-    // Track progress
-    task.on("progress", (percent)=>{
-      progressBar.style.width = percent + "%";
-    });
+        task.on("progress", (percent)=>{
+            progressBar.style.width = percent + "%";
+        });
 
-    await task.start();
-    await task.addFile(file);
+        await task.start();
+        await task.addFile(file);
 
-    // Process with password
-    await task.process({ password });
+        await task.process({ password });
 
-    const result = await task.download();
-    const blob = new Blob([result], {type:"application/pdf"});
-    const url = URL.createObjectURL(blob);
+        const result = await task.download();
+        const blob = new Blob([result], {type:"application/pdf"});
+        const url = URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "protected.pdf";
-    a.click();
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "protected.pdf";
+        a.click();
 
-    progressBar.style.width = "100%";
-    sizeInfo.innerText += ` → Protected Size: ${(blob.size/1024/1024).toFixed(2)} MB`;
-    msg.innerText = "✅ PDF Protected Successfully!";
+        progressBar.style.width = "100%";
+        sizeInfo.innerText += ` → Protected Size: ${(blob.size/1024/1024).toFixed(2)} MB`;
+        msg.innerText = "✅ PDF Protected Successfully!";
 
-  }catch(e){
-    console.error(e);
-    msg.innerText = "❌ Error processing PDF: " + (e.message || "");
-  }
+    }catch(e){
+        console.error(e);
+        msg.innerText = "❌ Error processing PDF: " + (e.message || "");
+    }
 }
 </script>
 
