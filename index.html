@@ -60,15 +60,15 @@ header{
 <div class="container">
 
 <div id="ad-top">
-<strong>Protect Your PDF</strong> – Add password protection to your PDF file easily and securely.
+<strong>Protect Your PDF</strong> – Add password protection easily and securely.
 </div>
 
-<p>Upload your PDF file to add password protection.</p>
+<p>Click below to start protecting your PDF:</p>
 
-<input type="file" id="file" style="display:none;" onchange="loadProtectWidget()">
-<label class="upload-btn" for="file">Upload File</label>
-
-<div id="widgetArea" style="margin-top:30px;"></div>
+<!-- Upload button = redirect to PDF24 -->
+<div class="upload-btn" onclick="goToPDF24()">
+Upload File
+</div>
 
 <div id="ad-middle">Middle Ad Placeholder</div>
 
@@ -84,18 +84,9 @@ Home
 
 </div>
 
-<!-- PDF24 official widget -->
-<script src="https://tools.pdf24.org/static/js/widget.js"></script>
 <script>
-function loadProtectWidget(){
-    const file = document.getElementById('file').files[0];
-    if(!file) return;
-
-    pdf24.loadWidget('lock-pdf', {
-        containerId: 'widgetArea',
-        langCode: 'en',
-        widgetConfig: { theme: 'lightTheme' }
-    });
+function goToPDF24(){
+    window.location.href = "https://tools.pdf24.org/en/lock-pdf";
 }
 </script>
 
