@@ -7,31 +7,28 @@ export default async function handler(req,res){
   if(req.method!=="POST") return res.status(405).json({error:"Method not allowed"});
 
   try{
-    const apiKey = process.env.ILOVEPDF_SECRET_KEY;
-    if(!apiKey) return res.status(500).json({error:"API key missing"});
+    const secretKey = process.env.ILOVEPDF_SECRET_KEY;
+    if(!secretKey) return res.status(500).json({error:"API key missing"});
 
-    const data = await new Promise((resolve,reject)=>{
-      const chunks = [];
-      req.on("data",chunk=>chunks.push(chunk));
-      req.on("end",()=>resolve(Buffer.concat(chunks)));
-      req.on("error",err=>reject(err));
-    });
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    const buffer = Buffer.concat(chunks);
 
     const form = new FormData();
-    form.append("file", data, { filename:"file.pdf", contentType:"application/pdf" });
-    form.append("password", req.body.password || "1234");
+    form.append("file", buffer, { filename:"file.pdf", contentType:"application/pdf" });
+    form.append("password", req.headers["password"] || "1234"); // optional default
 
-    const apiResponse = await fetch("https://api.ilovepdf.com/v1/protect", {
+    const apiResponse = await fetch("https://api.ilovepdf.com/v2/protect", {
       method:"POST",
-      headers: { Authorization:`Bearer ${apiKey}` },
+      headers: { Authorization:`Bearer ${secretKey}` },
       body: form
     });
 
     if(!apiResponse.ok) throw new Error("ILovePDF API error");
 
-    const buffer = await apiResponse.arrayBuffer();
+    const resultBuffer = await apiResponse.arrayBuffer();
     res.setHeader("Content-Type","application/pdf");
-    res.send(Buffer.from(buffer));
+    res.send(Buffer.from(resultBuffer));
   }catch(e){
     console.error(e);
     res.status(500).json({error:e.message});
