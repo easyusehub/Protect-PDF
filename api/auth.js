@@ -9,7 +9,10 @@ export default function handler(req, res) {
       return res.status(500).json({ error: "Missing API keys" });
     }
 
+    // Current timestamp in seconds
     const time = Math.floor(Date.now() / 1000);
+
+    // Generate signature using SHA-256
     const signature = crypto
       .createHash("sha256")
       .update(publicKey + secretKey + time)
