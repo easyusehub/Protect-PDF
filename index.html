@@ -5,7 +5,8 @@
 <title>Protect PDF – EasyUseHub PRO</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://sdk.ilovepdf.com/v1/ilovepdf.min.js"></script>
+<!-- ILovePDF SDK -->
+<script src="https://sdk.ilovepdf.com/v1/ilovepdf.min.js" defer></script>
 
 <style>
 body{ font-family:Arial; background:#f5f7fa; margin:0; text-align:center; }
@@ -69,13 +70,18 @@ async function protectPDF(){
     return;
   }
 
+  if(typeof ILovePDF === 'undefined'){
+    alert("ILovePDF SDK not loaded yet");
+    return;
+  }
+
   msg.innerText = "";
   progressContainer.style.display = "block";
   progressBar.style.width = "0%";
   sizeInfo.innerText = `Original Size: ${(file.size/1024/1024).toFixed(2)} MB`;
 
   try{
-    // Get auth from backend
+    // Get auth from Vercel API
     const auth = await fetch("/api/auth").then(r=>r.json());
 
     const ilovepdf = new ILovePDF({
@@ -86,7 +92,7 @@ async function protectPDF(){
 
     const task = await ilovepdf.newTask("protect");
 
-    // Track upload progress
+    // Track progress
     task.on("progress", (percent)=>{
       progressBar.style.width = percent + "%";
     });
@@ -98,7 +104,6 @@ async function protectPDF(){
     await task.process({ password });
 
     const result = await task.download();
-
     const blob = new Blob([result], {type:"application/pdf"});
     const url = URL.createObjectURL(blob);
 
