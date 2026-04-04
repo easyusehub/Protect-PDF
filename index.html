@@ -12,7 +12,7 @@ header{ background:#fff; padding:15px; box-shadow:0 2px 5px rgba(0,0,0,.1); }
 /* In-Page Push Ad Style */
 #push-notification {
     position: fixed;
-    bottom: -150px; /* শুরুতে নিচে লুকানো থাকবে */
+    bottom: -150px; 
     right: 20px;
     width: 300px;
     background: #fff;
@@ -62,7 +62,7 @@ header{ background:#fff; padding:15px; box-shadow:0 2px 5px rgba(0,0,0,.1); }
     <img src="https://cdn-icons-png.flaticon.com/512/5968/5968313.png" alt="icon">
     <div class="push-text">
         <b>🚀 46+ Pro Tools Ready!</b>
-        <p>ALL PDF TOOLS,All calculators, Image Compressor & AI tools at EasyUseHub.</p>
+        <p>ALL PDF TOOLS, All calculators, Image Compressor & AI tools at EasyUseHub.</p>
     </div>
 </div>
 
@@ -74,7 +74,7 @@ header{ background:#fff; padding:15px; box-shadow:0 2px 5px rgba(0,0,0,.1); }
 
 <div class="custom-ad-bridge" onclick="window.open('https://easyusehub.blogspot.com', '_blank')">
     <span class="ad-title">🚀 Try 46+ Premium Free Web Tools!</span>
-    <p>All PDF TOOLS,16+ calculator, Age Calculator, BMI Tracker, Loan EMI etc, Image resize & More - 100% Free</p>
+    <p>All PDF TOOLS, 16+ calculator, Age Calculator, BMI Tracker, Loan EMI etc, Image resize & More - 100% Free</p>
     <div class="ad-btn">Open EasyUseHub</div>
 </div>
 
@@ -90,6 +90,12 @@ Upload File
     <div class="ad-btn" style="background: #fff;">Try Now</div>
 </div>
 
+<div class="custom-ad-bridge" style="background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="window.open('https://easyusehub.blogspot.com/p/ultimate-calculators-hub.html', '_blank')">
+    <span class="ad-title">🔢 Smart Financial & Health Calculators</span>
+    <p>Loan EMI, Age Calculator, BMI Tracker, and Tax Calculators at your fingertips.</p>
+    <div class="ad-btn" style="background: #000; color: #fff;">Open Calculators</div>
+</div>
+
 <div class="buttons">
 <button class="tools" onclick="window.location.href='https://easyusehub.blogspot.com/p/free-pdf-tools-online.html'">All PDF Tools</button>
 <button class="home" onclick="window.location.href='https://easyusehub.blogspot.com'">Home</button>
@@ -100,25 +106,16 @@ Upload File
 <script src="https://tools.pdf24.org/static/js/widget.js"></script>
 <script>
 function startProcess() {
-    // ১. PDF24 Widget লোড হবে
     pdf24.loadWidget('lock-pdf', {
         containerId: 'widgetArea',
         langCode: 'en',
         widgetConfig: { theme: 'lightTheme' }
     });
 
-    // ২. ১ সেকেন্ড পরে Push Ad স্লাইড করে আসবে
     setTimeout(function() {
         document.getElementById('push-notification').classList.add('active');
     }, 1000);
 }
-
-// অটোমেটিক ৫ সেকেন্ড পর পুশ অ্যাড চলে যাওয়ার জন্য (ঐচ্ছিক)
-/*
-setTimeout(function() {
-    document.getElementById('push-notification').classList.remove('active');
-}, 10000);
-*/
 </script>
 
 </body>
