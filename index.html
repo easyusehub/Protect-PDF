@@ -5,48 +5,28 @@
 <title>Protect PDF – EasyUseHub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:#f5f7fa;
-    text-align:center;
+body{ margin:0; font-family:Arial; background:#f5f7fa; text-align:center; }
+header{ background:#fff; padding:15px; box-shadow:0 2px 5px rgba(0,0,0,.1); }
+.container{ width:90%; max-width:900px; margin:30px auto; }
+
+/* Custom Ad Banner Style */
+.custom-ad-bridge {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white;
+    padding: 25px;
+    margin: 20px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    transition: transform 0.2s;
 }
-header{
-    background:#fff;
-    padding:15px;
-    box-shadow:0 2px 5px rgba(0,0,0,.1);
-}
-.container{
-    width:90%;
-    max-width:900px;
-    margin:30px auto;
-}
-#ad-top, #ad-middle{
-    background:#eee;
-    padding:20px;
-    margin:20px 0;
-    border-radius:8px;
-}
-.upload-btn{
-    display:inline-block;
-    padding:15px 30px;
-    background:#2563eb;
-    color:#fff;
-    border-radius:6px;
-    cursor:pointer;
-    margin:20px 0;
-}
-.buttons{
-    margin-top:10px;
-}
-.buttons button{
-    padding:10px 20px;
-    margin:5px;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    color:#fff;
-}
+.custom-ad-bridge:hover { transform: scale(1.02); }
+.ad-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; display: block; }
+.ad-btn { background: #fbbf24; color: #000; padding: 8px 20px; border-radius: 5px; font-weight: bold; text-transform: uppercase; display: inline-block; margin-top: 10px; }
+
+.upload-btn{ display:inline-block; padding:15px 30px; background:#2563eb; color:#fff; border-radius:6px; cursor:pointer; margin:20px 0; }
+.buttons{ margin-top:10px; }
+.buttons button{ padding:10px 20px; margin:5px; border:none; border-radius:5px; cursor:pointer; color:#fff; }
 .tools{ background:#10b981; }
 .home{ background:#f59e0b; }
 </style>
@@ -59,60 +39,55 @@ header{
 
 <div class="container">
 
-<div id="ad-top">
-<strong>Protect Your PDF</strong> – Add password protection easily and securely.
+<div class="custom-ad-bridge" onclick="window.open('https://easyusehub.blogspot.com/p/ultimate-calculators-hub.html', '_blank')">
+    <span class="ad-title">🚀 Try 46+ Premium Web Tools!</span>
+    <p>Age Calculator, BMI Tracker, Loan EMI & More - 100% Free</p>
+    <div class="ad-btn">Open EasyUseHub</div>
 </div>
 
-<p>Click below to start protecting your PDF</p>
-
-<label class="upload-btn" onclick="loadProtectWidget()">
-Upload File
-</label>
+<label class="upload-btn" onclick="loadProtectWidget()">Upload File</label>
 
 <div id="widgetArea" style="margin-top:30px;"></div>
 
-<div id="ad-middle">Middle Ad Placeholder</div>
+<div class="custom-ad-bridge" style="background: linear-gradient(135deg, #059669, #10b981);" onclick="window.open('https://easyusehub.blogspot.com', '_blank')">
+    <span class="ad-title">⚡ High-Speed Image Compressor</span>
+    <p>Compress your images without losing quality at EasyUseHub</p>
+    <div class="ad-btn" style="background: #fff;">Try Now</div>
+</div>
 
 <div class="buttons">
-<button class="tools" onclick="window.location.href='https://easyusehub.blogspot.com/p/free-pdf-tools-online.html'">
-All PDF Tools
-</button>
-<button class="home" onclick="window.location.href='https://easyusehub.blogspot.com/?m=1'">
-Home
-</button>
+<button class="tools" onclick="window.location.href='https://easyusehub.blogspot.com/p/free-pdf-tools-online.html'">All PDF Tools</button>
+<button class="home" onclick="window.location.href='https://easyusehub.blogspot.com/?m=1'">Home</button>
 </div>
 
 </div>
+
 <script src="https://tools.pdf24.org/static/js/widget.js"></script>
-
 <script>
 function loadProtectWidget(){
     pdf24.loadWidget('lock-pdf', {
         containerId: 'widgetArea',
         langCode: 'en',
-        widgetConfig: {
-            theme: 'lightTheme'
-        }
-    });
-
-    // --- ইনকাম বাড়ানোর জন্য নিচের এই ট্র্যাকিং কোডটুকু যোগ করা হয়েছে ---
-    
-    // ইউজার যখন ফাইল ডাউনলোড বাটনে ক্লিক করবে, তখন এই মেসেজটি আসবে
-    document.addEventListener('click', function(e) {
-        // PDF24 উইজেটের ডাউনলোড বাটন ডিটেক্ট করার জন্য
-        if (e.target && (e.target.innerText === 'Download' || e.target.classList.contains('download'))) {
-            setTimeout(function() {
-                if (confirm("Processing Successful! \n\nBefore you leave, check out our 46+ Premium Tools (Calculators & Health Trackers) on the Official Site?")) {
-                    window.open("https://easyusehub.blogspot.com", "_blank");
-                }
-            }, 1500); // ডাউনলোড হওয়ার ১.৫ সেকেন্ড পর পপ-আপ আসবে
-        }
+        widgetConfig: { theme: 'lightTheme' }
     });
 }
+
+// Instant Pop-up Logic
+// Eita widget-er vitorer click-o track korbe
+document.addEventListener('mousedown', function(e) {
+    // Check korbe click kora element-er moddhe 'Download' lekha ache kina
+    if (e.target && (e.target.innerText.includes('Download') || e.target.classList.contains('download'))) {
+        
+        // Instant pop-up message
+        var userConfirm = confirm("Success! Your file is ready. \n\nBefore you go, check out our 46+ Premium Tools on the Main Site?");
+        
+        if (userConfirm) {
+            // OK dile Blogger-e niye jabe (Vignette Ad load hobe)
+            window.open("https://easyusehub.blogspot.com", "_blank");
+        }
+    }
+}, true); // 'true' dewar karone eita dynamic button-o dhorbe
 </script>
 
 </body>
 </html>
-
-
-
