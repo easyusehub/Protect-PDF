@@ -2,19 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Protect PDF – EasyUseHub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EasyUseHub - Image Compressor Online</title>
 <style>
-body{ margin:0; font-family:Arial; background:#f5f7fa; text-align:center; position: relative; overflow-x: hidden; }
-header{ background:#fff; padding:15px; box-shadow:0 2px 5px rgba(0,0,0,.1); }
-.container{ width:90%; max-width:900px; margin:30px auto; }
+body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f4f7f6; margin:0; padding:20px; text-align:center; color:#1e293b; position: relative; overflow-x: hidden;}
+.container{max-width:450px; margin:0 auto; background:#fff; padding:25px; border-radius:20px; box-shadow:0 10px 25px rgba(0,0,0,0.1);}
+header img{max-width:150px; margin-bottom:15px;}
 
-/* In-Page Push Ad Style */
+/* Custom Ad Bridge Style (Protect PDF টুলের মতো) */
+.custom-ad-bridge {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white;
+    padding: 20px;
+    margin: 15px auto;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    transition: transform 0.2s;
+    text-align: center;
+    max-width: 450px;
+}
+.custom-ad-bridge:hover { transform: scale(1.02); }
+.ad-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; display: block; }
+.ad-desc { font-size: 12px; color: rgba(255, 255, 255, 0.9); margin-bottom: 10px; display: block; line-height: 1.4; }
+.ad-btn { background: #fbbf24; color: #000; padding: 6px 15px; border-radius: 5px; font-weight: bold; text-transform: uppercase; display: inline-block; margin-top: 5px; font-size: 12px; }
+
+/* Push Ad Style */
 #push-notification {
     position: fixed;
     bottom: -150px; 
     right: 20px;
-    width: 300px;
+    width: 280px;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -27,32 +45,32 @@ header{ background:#fff; padding:15px; box-shadow:0 2px 5px rgba(0,0,0,.1); }
     border-left: 5px solid #2563eb;
 }
 #push-notification.active { bottom: 20px; }
-#push-notification img { width: 50px; height: 50px; border-radius: 8px; margin-right: 12px; }
+#push-notification img { width: 45px; height: 45px; border-radius: 8px; margin-right: 12px; }
 .push-text { text-align: left; flex: 1; }
-.push-text b { font-size: 14px; color: #222; display: block; }
-.push-text p { font-size: 12px; color: #666; margin: 3px 0 0 0; }
+.push-text b { font-size: 13px; color: #222; display: block; }
+.push-text p { font-size: 11px; color: #666; margin: 3px 0 0 0; }
 .close-push { position: absolute; top: 5px; right: 8px; font-size: 18px; color: #aaa; cursor: pointer; }
 
-/* Custom Ad Banner Style */
-.custom-ad-bridge {
-    background: linear-gradient(135deg, #1e3a8a, #2563eb);
-    color: white;
-    padding: 25px;
-    margin: 20px 0;
-    border-radius: 12px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-    transition: transform 0.2s;
-}
-.custom-ad-bridge:hover { transform: scale(1.02); }
-.ad-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; display: block; }
-.ad-btn { background: #fbbf24; color: #000; padding: 8px 20px; border-radius: 5px; font-weight: bold; text-transform: uppercase; display: inline-block; margin-top: 10px; }
+.upload-area{border:2px dashed #3b82f6; padding:30px; border-radius:15px; cursor:pointer; background:#f0f7ff; margin-bottom:20px; transition: 0.3s;}
+.upload-area:hover{background:#e0eeff; border-style: solid;}
 
-.upload-btn{ display:inline-block; padding:15px 30px; background:#2563eb; color:#fff; border-radius:6px; cursor:pointer; margin:20px 0; }
-.buttons{ margin-top:10px; }
-.buttons button{ padding:10px 20px; margin:5px; border:none; border-radius:5px; cursor:pointer; color:#fff; }
-.tools{ background:#10b981; }
-.home{ background:#f59e0b; }
+.btn{width:100%; padding:15px; background:#22c55e; color:#fff; border:none; border-radius:12px; font-size:18px; font-weight:bold; cursor:pointer; margin-top:10px; transition: 0.3s;}
+.btn:hover{background:#16a34a; transform: translateY(-2px);}
+
+select{width:100%; padding:12px; margin:10px 0; border-radius:10px; border:2px solid #e2e8f0; font-size:16px; outline:none;}
+
+#progress-container{display:none; margin:20px 0; text-align:left;}
+.progress-label{font-size:13px; font-weight:bold; color:#3b82f6; margin-bottom:5px; display:block;}
+.progress-bg{width:100%; height:10px; background:#e2e8f0; border-radius:10px; overflow:hidden;}
+.progress-fill{width:0%; height:100%; background:#22c55e; transition: width 0.3s ease; border-radius:10px;}
+
+#preview img{max-width:100px; border-radius:12px; margin-top:20px; border:1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+.download-btn{display:block; margin-top:15px; background:#1e293b; color:#fff; padding:15px; border-radius:10px; text-decoration:none; font-weight:bold; font-size:16px;}
+.home-btn{display:inline-block; margin-top:20px; color:#3b82f6; text-decoration:none; font-weight:bold; font-size:14px;}
+.tool-title {font-size: 24px; font-weight: 800; color: #1e293b; margin: 5px 0;}
+.tool-title span {color: #3b82f6;}
+.tool-desc {font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.4;}
+#orig-info {margin-bottom: 15px; font-size: 14px; font-weight: bold; color: #ef4444; display: none; background: #fef2f2; padding: 8px; border-radius: 8px;}
 </style>
 </head>
 <body>
@@ -62,61 +80,140 @@ header{ background:#fff; padding:15px; box-shadow:0 2px 5px rgba(0,0,0,.1); }
     <img src="https://cdn-icons-png.flaticon.com/512/5968/5968313.png" alt="icon">
     <div class="push-text">
         <b>🚀 46+ Pro Tools Ready!</b>
-        <p>ALL PDF TOOLS, All calculators, Image Compressor & AI tools at EasyUseHub.</p>
+        <p>ALL PDF TOOLS, Calculators & AI tools at EasyUseHub.</p>
     </div>
 </div>
 
-<header>
-<h2>Protect PDF – EasyUseHub</h2>
-</header>
-
-<div class="container">
-
 <div class="custom-ad-bridge" onclick="window.open('https://easyusehub.blogspot.com', '_blank')">
     <span class="ad-title">🚀 Try 46+ Premium Free Web Tools!</span>
-    <p>All PDF TOOLS, 16+ calculator, Age Calculator, BMI Tracker, Loan EMI etc, Image resize & More - 100% Free</p>
+    <span class="ad-desc">All PDF TOOLS, 16+ calculator, Age Calculator, BMI Tracker, Loan EMI etc - 100% Free</span>
     <div class="ad-btn">Open EasyUseHub</div>
 </div>
 
-<label class="upload-btn" onclick="startProcess()">
-Upload File
-</label>
+<div class="container">
+    <header><img src="https://i.ibb.co.com/21CVbgH5/1000036310-removebg-preview-1.png" alt="EasyUseHub"></header>
+    <h1 class="tool-title">Image <span>Compressor</span></h1>
+    <p class="tool-desc">Fast and secure image optimization. Reduce file size without losing quality.</p>
+    
+    <div class="custom-ad-bridge" style="background: linear-gradient(135deg, #059669, #10b981); padding: 15px;" onclick="window.open('https://easyusehub.blogspot.com/p/free-pdf-tools-online.html', '_blank')">
+        <span class="ad-title" style="font-size:16px;">⚡ Best Online PDF Tools</span>
+        <span class="ad-desc">Merge, Split & Convert PDF Free at EasyUseHub</span>
+        <div class="ad-btn" style="background: #fff; color: #059669;">Try Now</div>
+    </div>
 
-<div id="widgetArea" style="margin-top:30px;"></div>
+    <div id="orig-info">Original Size: <span id="origSizeVal">0</span></div>
+    <div class="upload-area" onclick="document.getElementById('fileInp').click()">
+        <div style="background:#3b82f6; color:#fff; padding:10px; border-radius:8px; display:inline-block; font-weight:bold; margin-bottom:10px;">Select Photo</div>
+        <input type="file" id="fileInp" accept="image/*" style="display:none">
+        <div id="status" style="font-size:13px; color:#64748b;">Max Size: 15MB | JPG, PNG, WebP</div>
+    </div>
 
-<div class="custom-ad-bridge" style="background: linear-gradient(135deg, #059669, #10b981);" onclick="window.open('https://easyusehub.blogspot.com/p/image-compressor.html', '_blank')">
-    <span class="ad-title">⚡ High-Speed Image Compressor</span>
-    <p>Compress your images without losing quality at EasyUseHub</p>
-    <div class="ad-btn" style="background: #fff;">Try Now</div>
+    <label style="display:block; text-align:left; font-weight:bold; font-size:14px; color:#475569;">Target Size:</label>
+    <select id="targetKB">
+        <option value="50">Under 50 KB (Extreme)</option>
+        <option value="100" selected>Under 100 KB (Recommended)</option>
+        <option value="200">Under 200 KB</option>
+        <option value="500">Under 500 KB</option>
+        <option value="1MB">Under 1MB</option>
+    </select>
+
+    <button id="runBtn" class="btn" style="display:none;" onclick="startCompression()">⚡ Optimize Image</button>
+
+    <div id="progress-container">
+        <span class="progress-label" id="p-label">Processing: 0%</span>
+        <div class="progress-bg"><div id="p-fill" class="progress-fill"></div></div>
+    </div>
+
+    <div id="preview"></div>
+
+    <a href="https://easyusehub.blogspot.com/p/image-compressor.html" class="home-btn">🏠 BACK TO HOME</a>
 </div>
 
 <div class="custom-ad-bridge" style="background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="window.open('https://easyusehub.blogspot.com/p/ultimate-calculators-hub.html', '_blank')">
-    <span class="ad-title">🔢 Smart Financial & Health Calculators</span>
-    <p>Loan EMI, Age Calculator, BMI Tracker, and Tax Calculators at your fingertips.</p>
+    <span class="ad-title">🔢 Smart Financial Calculators</span>
+    <span class="ad-desc">Loan EMI, Age Calculator, and BMI Tracker at your fingertips.</span>
     <div class="ad-btn" style="background: #000; color: #fff;">Open Calculators</div>
 </div>
 
-<div class="buttons">
-<button class="tools" onclick="window.location.href='https://easyusehub.blogspot.com/p/free-pdf-tools-online.html'">All PDF Tools</button>
-<button class="home" onclick="window.location.href='https://easyusehub.blogspot.com'">Home</button>
-</div>
-
-</div>
-
-<script src="https://tools.pdf24.org/static/js/widget.js"></script>
 <script>
-function startProcess() {
-    pdf24.loadWidget('lock-pdf', {
-        containerId: 'widgetArea',
-        langCode: 'en',
-        widgetConfig: { theme: 'lightTheme' }
-    });
+let selectedImage = null;
 
-    setTimeout(function() {
-        document.getElementById('push-notification').classList.add('active');
-    }, 1000);
+document.getElementById('fileInp').onchange = function(e) {
+    if(this.files.length > 0) {
+        selectedImage = this.files[0];
+        document.getElementById('status').innerText = "Selected: " + selectedImage.name;
+        document.getElementById('runBtn').style.display = 'block';
+        document.getElementById('preview').innerHTML = '';
+        document.getElementById('progress-container').style.display = 'none';
+        
+        // ফাইল সিলেক্ট করলে পুশ অ্যাড একটিভ হবে
+        setTimeout(() => { document.getElementById('push-notification').classList.add('active'); }, 1500);
+   }
+};
+
+async function startCompression() {
+    const targetKB = parseFloat(document.getElementById('targetKB').value);
+    const pContainer = document.getElementById('progress-container');
+    const pFill = document.getElementById('p-fill');
+    const pLabel = document.getElementById('p-label');
+    const preview = document.getElementById('preview');
+    const runBtn = document.getElementById('runBtn');
+
+    pContainer.style.display = 'block';
+    runBtn.style.display = 'none';
+    preview.innerHTML = '';
+    
+    updateProgress(30, "Analyzing Image...");
+
+    const img = new Image();
+    img.src = URL.createObjectURL(selectedImage);
+
+    img.onload = async () => {
+        updateProgress(50, "Reducing Resolution...");
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 800; 
+        if (width > maxDim || height > maxDim) {
+            const ratio = Math.min(maxDim / width, maxDim / height);
+            width *= ratio; height *= ratio;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        updateProgress(70, "Squeezing Pixels...");
+        
+        let quality = 0.8;
+        let finalBlob = null;
+        for(let i=0; i<5; i++) {
+            finalBlob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', quality));
+            if (finalBlob.size / 1024 <= targetKB) break;
+            quality -= 0.15;
+            if (quality < 0.1) quality = 0.1;
+        }
+
+        updateProgress(100, "Compression Complete!");
+
+        setTimeout(() => {
+            const downloadUrl = URL.createObjectURL(finalBlob);
+            preview.innerHTML = `
+                <div style="font-weight:bold; color:#22c55e; margin:10px 0;">New Size: ${(finalBlob.size/1024).toFixed(1)} KB</div>
+                <img src="${downloadUrl}">
+                <a href="${downloadUrl}" download="EasyUseHub_Compressed.jpg" class="download-btn">Download Compressed Photo</a>
+            `;
+            pContainer.style.display = 'none';
+        }, 500);
+    };
+}
+
+function updateProgress(percent, text) {
+    document.getElementById('p-fill').style.width = percent + "%";
+    document.getElementById('p-label').innerText = text + " (" + percent + "%)";
 }
 </script>
-
 </body>
 </html>
