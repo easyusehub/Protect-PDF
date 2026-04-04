@@ -73,7 +73,6 @@ Upload File
 
 <div id="ad-middle">Middle Ad Placeholder</div>
 
-<!-- All PDF Tools + Home buttons BELOW middle ad -->
 <div class="buttons">
 <button class="tools" onclick="window.location.href='https://easyusehub.blogspot.com/p/free-pdf-tools-online.html'">
 All PDF Tools
@@ -84,9 +83,8 @@ Home
 </div>
 
 </div>
-
-<!-- PDF24 official widget -->
 <script src="https://tools.pdf24.org/static/js/widget.js"></script>
+
 <script>
 function loadProtectWidget(){
     pdf24.loadWidget('lock-pdf', {
@@ -96,8 +94,25 @@ function loadProtectWidget(){
             theme: 'lightTheme'
         }
     });
+
+    // --- ইনকাম বাড়ানোর জন্য নিচের এই ট্র্যাকিং কোডটুকু যোগ করা হয়েছে ---
+    
+    // ইউজার যখন ফাইল ডাউনলোড বাটনে ক্লিক করবে, তখন এই মেসেজটি আসবে
+    document.addEventListener('click', function(e) {
+        // PDF24 উইজেটের ডাউনলোড বাটন ডিটেক্ট করার জন্য
+        if (e.target && (e.target.innerText === 'Download' || e.target.classList.contains('download'))) {
+            setTimeout(function() {
+                if (confirm("Processing Successful! \n\nBefore you leave, check out our 46+ Premium Tools (Calculators & Health Trackers) on the Official Site?")) {
+                    window.open("https://easyusehub.blogspot.com", "_blank");
+                }
+            }, 1500); // ডাউনলোড হওয়ার ১.৫ সেকেন্ড পর পপ-আপ আসবে
+        }
+    });
 }
 </script>
 
 </body>
 </html>
+
+
+
